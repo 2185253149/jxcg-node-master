@@ -1,0 +1,9 @@
+/* scoped */
+.components_Input_Map_Point_Point{
+  height: 100%;
+  width: 100%;
+}
+.componentMap{
+  min-width: 400px;
+  min-height: 400px;
+}

@@ -1,0 +1,87 @@
+/* scoped */
+.formItems{
+  padding-bottom:16rpx;
+  background:#fff;
+}
+.formItems .formDiv{
+  margin-left:32rpx;
+  margin-right: 16rpx;
+  border-bottom: 1rpx solid #e4e4e4;
+}
+.Web .formItems .formDiv{
+    width: 240px;
+    height: 80px;
+    overflow:hidden;
+    float: left;
+    margin-right: 0rpx;
+    border-bottom: none;
+}
+.formSwitch{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin:32rpx;
+}
+.Web .formSwitch{
+  display:initial;
+  margin-right:initial;
+  margin-top:initial;
+  margin-bottom:initial;
+}
+.formItems .formLabel{
+  padding: 16rpx 0px;
+  color: #999;
+}
+.Web .formItems .formLabel{
+  padding: 8rpx 0px;
+}
+.labelTitle{
+    font-weight: bold;
+    color: #000;
+    line-height: 80rpx;
+}
+.formItems .formErr{
+  color: #ff0000;
+  font-size:24rpx;
+}
+.Web .formItems .formErr{
+  font-size:12px;
+}
+.itemInput{
+  width: 650rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: left;
+  padding:0rpx 16rpx;
+  border:1rpx solid #e4e4e4;
+  overflow:hidden;
+}
+.Web .itemInput{
+  width: 90%;
+  height: 32px;
+  line-height: 32px;
+  padding:0rpx 8px;
+}
+.heightAuto{
+  width: 650rpx;
+  height: auto;
+  text-align: left;
+  padding:0rpx 16rpx;
+  border:1rpx solid #e4e4e4;
+  line-height: 150%;
+}
+.formTitle{
+  height:1px;
+  background:#e4e4e4;
+}
+.tips{
+  margin-top:32rpx;
+}
+.tip{
+  margin:32rpx;
+  color:#ff0000;
+}
+.inputBox{
+  border:1rpx solid #e4e4e4;
+}

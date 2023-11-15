@@ -1,0 +1,4 @@
+<div class="components_Input_Customer_Web_Index">
+    <maphwpoint v-if="attr.type == 'maphwpoint'" cename="maphwchange" @change="change"  :name="name" :index="index" :disabled="disabled" :value="value" :attr="attr"></maphwpoint>
+    <userselect v-if="attr.type == 'userselect'" cename="userselectchange" @change="change"  :name="name" :index="index" :disabled="disabled" :value="value" :item="item" :attr="attr"></userselect>
+</div>

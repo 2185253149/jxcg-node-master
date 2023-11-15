@@ -1,0 +1,94 @@
+<div class="components_Input_Mixinput_Mixinput">
+<div class="mixinput">
+  <textarea :style="attr.style" class="inputTextArea" v-if="type == 'textarea'" :placeholder="attr.placeholder || '请输入'" :maxlength="attr.maxlength ? attr.maxlength : '10000'" @change="_change" :rows="attr.rows || 3" @blur="_change" :name="name" :disabled="readOnly" :value="value1"></textarea>
+  <input :style="attr.style" class="inputBox" v-else-if="type == 'input'" :placeholder="attr.placeholder || '请输入'" :maxlength="attr.maxlength ? attr.maxlength : '10000'" @change="_change" @blur="_change" :name="name" :type="attr.type" :password="attr.type == 'password'" :disabled="readOnly" :value="value1"></input>
+  <div :style="computStyle('flex:1;')" v-else-if="type == 'select'">
+    <picker :style="attr.style" class="inputBox" v-if="platform == 'WeChatMiniApp' || platform == 'AlipayMiniApp'" @change="_pickerPick" mode="selector" range-key="name" :value="value1[0]" :disabled="readOnly" :range="attr.actions">
+      <span :class="!readOnly ? 'selectValue' : ''">{{value1[1] || attr.placeholder || '请选择'}}</span>
+    </picker>
+    <div :style="attr.style" class="inputBox" v-else @click="pickerPick">
+      <span :class="!readOnly ? 'selectValue' : ''">{{value1[1] || attr.placeholder || '请选择'}}</span>
+    </div>
+  </div>
+  <div :style="attr.style" class="inputBox flex_row_default" v-else-if="type == 'date'">
+    <div v-if="platform == 'WeChatMiniApp' || platform == 'AlipayMiniApp'">
+      <picker v-if="attr.type == 1" mode="date" :value="value1" :start="attr.min" :end="attr.max" @change="_pickerDate" fields="year" :disabled="readOnly">
+        <div class="selectValue">{{value1 || attr.placeholder || '请选择'}}</div>
+      </picker>
+      <picker v-else-if="attr.type == 2" mode="date" :value="value1" :start="attr.min" :end="attr.max" @change="_pickerDate" fields="month" :disabled="readOnly">
+        <div class="selectValue">{{value1 || attr.placeholder || '请选择'}}</div>
+      </picker>
+      <picker v-else mode="date" :value="value1" :start="attr.min" :end="attr.max" @change="_pickerDate" fields="day" :disabled="readOnly">
+        <div class="selectValue">{{value1 || attr.placeholder || '请选择'}}</div>
+      </picker>
+    </div>
+    <div v-else class="selectValue" @click="pickerDate">{{value1 || attr.placeholder || '请选择'}}</div>
+  </div>
+  <div :style="attr.style" class="inputBox flex_row_default" v-else-if="type == 'time'">
+    <picker v-if="platform == 'WeChatMiniApp' || platform == 'AlipayMiniApp'" mode="time" :value="value1" :start="attr.min" :end="attr.max" @change="_pickerTime">
+      <div class="selectValue">{{value1 || attr.placeholder || '请选择'}}</div>
+    </picker>
+    <div v-else @click="pickerTime" class="selectValue">{{value1 || attr.placeholder || ''}}</div>
+  </div>
+  <div v-else-if="type == 'datetime'" :style="computStyle('width:100%;')">
+    <div :style="attr.style" class="inputBox flex_row_default" v-if="platform == 'WeChatMiniApp' || platform == 'AlipayMiniApp'">
+      <picker v-if="value1[3].args[0].type == 'year'" class="datetimepicker" mode="date" :value="value1[1]" :start="value1[3].args[0].min" :end="value1[3].args[0].max" @change="pickerDateTime_date" fields="year" :disabled="readOnly">
+        <div class="selectValue">{{value1[1] || attr.placeholder || '请选择'}}</div>
+      </picker>
+      <picker v-else-if="value1[3].args[0].type == 'month'" class="datetimepicker" mode="date" :value="value1[1]" :start="value1[3].args[0].min" :end="value1[3].args[0].max" @change="pickerDateTime_date" fields="month" :disabled="readOnly">
+        <div class="selectValue">{{value1[1] || attr.placeholder || '请选择'}}</div>
+      </picker>
+      <picker v-else class="datetimepicker" mode="date" :value="value1[1]" :start="value1[3].args[0].min" :end="value1[3].args[0].max" @change="pickerDateTime_date" fields="day" :disabled="readOnly">
+        <div class="selectValue">{{value1[1] || attr.placeholder || '请选择'}}</div>
+      </picker>
+      <picker class="datetimepicker" mode="time" :value="value1[2]" :start="value1[3].args[1].min" :end="value1[3].args[1].max" @change="pickerDateTime_time">
+        <div class="selectValue">{{value1[2] || attr.placeholder || '请选择'}}</div>
+      </picker>
+    </div>
+    <div :style="attr.style" v-else class="inputBox flex_row_default" @click="pickerDateTime">
+      <div class="selectValue" v-if="value1[0]">{{value1[1] + ' ' + value1[2]}}</div>
+      <div class="selectValue" v-else>{{attr.placeholder || '请选择'}}</div>
+    </div>
+  </div>
+  <div class="inputLabels" v-else-if="type == 'radio'">
+    <inputcheckbox :style="computStyle('float:left;')" @change="_change" type="radio" :index="index" :disabled="readOnly" v-for="(item,index) in attr.actions" key="value" :value="item.value" :checked="item.value == value1">{{item.name}}</inputcheckbox>
+  </div>
+  <div class="inputLabels" v-else-if="type == 'checkbox'">
+    <inputcheckbox :items="false" :style="computStyle('float:left;')" @change="_change" type="radio" :index="index" :disabled="readOnly" v-for="(item,index) in attr.actions" key="value" :value="item.value" :checked="value1 && value1[index]">{{item.name}}</inputcheckbox>
+  </div>
+  <switch_ :style="computStyle('zoom:0.8;margin:32rpx 0rpx;')" :disabled="readOnly" :color="attr.color" @change="_change" v-else-if="type == 'switch'" :type="attr.type" :checked="value1"></switch_>
+  <div class="inputImageBox" v-else-if="type == 'image'">
+    <div v-for="(item,index) in value1" class="imgBox" key="index">
+      <div v-if="imgActionsShow" class="imgActions" @click="hideImgActions">
+        <span class="imgAction" :data-index="index" v-if="!readOnly" @click="removeFile">删除</span>
+        <span class="imgAction" :data-index="index" @click="showFile">查看</span>
+        <span class="imgAction" :data-index="index" v-if="!readOnly" @click="uploadFile">更换</span>
+      </div>
+      <img @click="showImgActions" :data-url="item" :mode="attr.mode || 'aspectFill'" class="inputImage" :src="item"></img>
+    </div>
+    <div @click="uploadFile" v-if="!readOnly && (!value1.length || value1.length < (attr.limit || 1))" class="inputImageUpload">
+      <span class="inputUploading" v-if="uploading">上传中...</span>
+      <span v-else>+</span>
+    </div>
+    <div class="clear"></div>
+    <div v-if="attr.placeholder" class="placeholder">{{attr.placeholder}}</div>
+  </div>
+  <div class="inputImageBox" v-else-if="type == 'file'">
+    <div v-for="(item,index) in value1" class="fileBox" key="index">
+      <span class="inputFile" :data-index="index" @click="showFile">{{item.originalname}}</span>
+      <span class="fileAction" :data-index="index" v-if="!readOnly" @click="removeFile">删除</span>
+      <span class="fileAction" :data-index="index" v-if="!readOnly" @click="uploadFile">更换</span>
+    </div>
+    <div @click="uploadFile" v-if="!readOnly && (!value1.length || value1.length < (attr.limit || 1))" class="inputImageUploadFile">+选择文件</div>
+    <div v-if="platform=='WeChatMiniApp' && !readOnly && (!value1.length || value1.length < (attr.limit || 1))" :style="computStyle('color:#ccc;')">只能选择聊天记录中的文件</div>
+    <div class="clear"></div>
+    <div v-if="attr.placeholder" class="placeholder">{{attr.placeholder}}</div>
+  </div>
+  <div :style="attr.style" class="inputBox" v-else-if="type == 'onlyselect'">
+    <onlyselect :skey="attr.skey" :index="index" :name="name" :disabled="readOnly" :url="attr.url" :clear-text="attr.clearText" :title="attr.title" :data="attr.data" :placeholder="attr.placeholder || '请选择'" :search-key="attr.searchKey" :can-clear="attr.canClear" :vkey="attr.vkey" :value="value1" @change="_change"></onlyselect>
+  </div>
+  <div :style="attr.style" class="inputBox" v-else-if="type == 'area' || type == 'region'">
+    <inputregion :placeholder="attr.placeholder" :index="index" :name="name" :disabled="readOnly" :value="value1" @change="_change" :custom-item="attr.customItem"></inputregion>
+  </div>
+</div>
+</div>

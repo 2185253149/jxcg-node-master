@@ -1,0 +1,109 @@
+<template>
+<master :title="title">
+  <listpage ref="listpage"></listpage>
+</master>
+</template>
+<script type="text/javascript">
+(function (G) {
+  G.vue({
+  "usingComponents": {
+    "master": "/components/Master/Master",
+    "listpage": "/components/List/Page/Page"
+  },
+  "enablePullDownRefresh": true
+},{
+    data: {
+      title: '',
+      modelName: '',
+      nickName:'',
+      models: {},
+      platform: G.platform
+    },
+    methods: {
+      load: function (next) {
+        this.selectComponent('#listpage').load(next);
+      },
+      refresh: function (next) {
+        this.selectComponent('#listpage').refresh(next);
+      },
+      onPullDownRefresh: function (event) {
+        this.refresh(function () {
+          G.stopPullDownRefresh();
+        })
+      },
+      onReachBottom: function (event) {
+        this.load();
+      },
+      edit: function (event) {
+        var modeleditquery = {
+          values: {},
+          refresh: this.refresh,
+          models: this.getData('models'),
+          url: '/api/model/' + this.getData('modelName')
+        }
+        if (event.type == 'edit') {
+          modeleditquery.values = event.detail;
+          modeleditquery.title = '修改 ' + event.detail.name + ' ' + this.getData('nickName');
+          modeleditquery.meth = 'PUT';
+        } else {
+          modeleditquery.title = '新增 ' + this.getData('nickName');
+          modeleditquery.meth = 'POST';
+        }
+        G.Storage.set('modeleditquery', modeleditquery);
+        this.$go('/pages/model/edit/edit');
+      },
+      editmenu: function (event) {
+        G.$go('/pages/group/menu/menu?groupId=' + event.detail.id + '&name=' + (event.detail.name || event.detail.nickName || event.detail.userName));
+      }
+    },
+    mounted: function (query) {
+      query = {
+        modelName:'group',
+        nickName:G.Storage.get('nickNames').group || '权限'
+      }
+      var title = query.nickName;
+      var _this = this;
+      G.ajax('/model/' + query.modelName, function (ret) {
+        if (!ret.errorMsg) {
+          _this.selectComponent('#listpage').init({
+            getUrl: '/api/model/' + query.modelName,
+            deleteUrl: '/api/model/' + query.modelName,
+            models: ret,
+            searchKey: query.searchKey,
+            edit:{
+              status:'/api/model/' + query.modelName
+            },
+            actions:{
+              editmenu:{
+                name:'分配菜单',
+                action:function(event){
+                  G.$go('/pages/group/menu/menu?groupId=' + event.detail.id + '&name=' + (event.detail.name || event.detail.nickName || event.detail.userName));
+                }
+              },
+              add:{
+                name:'新增',
+                action: function (event) {
+                  _this.edit(event);
+                }
+              },
+              edit:{
+                name:'修改',
+                action: function (event) {
+                  _this.edit(event);
+                }
+              }
+            }
+          })
+          _this.load();
+          _this.setData({ models: ret,nickName:query.nickName, title: title, modelName: query.modelName });
+        }
+      }, {
+          storageName: query.modelName + 'Model'
+        })
+    }
+  });
+})(Y)
+</script>
+<style scoped>
+
+</style>

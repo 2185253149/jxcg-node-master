@@ -1,0 +1,139 @@
+<template>
+<master :show-top="platform == 'Web' || platform == 'iOS' || platform == 'Android'" :title="title">
+  <listpage ref="listpage"></listpage>
+</master>
+</template>
+<script type="text/javascript">
+(function (G) {
+  G.vue({
+  "usingComponents": {
+  	"master": "/components/Master/Master",
+    "listpage": "/components/List/Page/Page",
+    "mixinput": "/components/Input/Mixinput/Mixinput"
+  }
+},{
+    data: {
+      title: '',
+      attr:{
+        actions:[]
+      },
+      unitNickName:'',
+      platform:G.platform
+    },
+    methods: {
+      load: function (next) {
+        this.selectComponent('#listpage').load(next);
+      },
+      refresh: function (next) {
+        this.selectComponent('#listpage').refresh(next);
+      },
+      onPullDownRefresh: function (event) {
+        this.refresh(function () {
+          G.stopPullDownRefresh();
+        })
+      },
+      onReachBottom: function (event) {
+        this.load();
+      },
+      edit: function (event) {
+        var unitNickName = this.getData('unitNickName');
+        var modeleditquery = {
+          values: event.detail,
+          refresh: this.refresh,
+          title:'修改' + event.detail.userName + ' ' + unitNickName,
+          tips:'变更' + unitNickName + '可能导致数据异常，请谨慎操作!',
+          models: {
+            _id:{
+              label:''
+            },
+            unitId:{
+              label:'变更后' + unitNickName,
+              attr:this.getData('attr'),
+              type:'select'
+            }
+          },
+          url: '/api/model/user',
+          meth:'PUT',
+          submit:function(data){
+            return event.detail.unitId != data.unitId ? data : false
+          }
+        }
+        G.Storage.set('modeleditquery', modeleditquery);
+        this.$go('/pages/model/edit/edit');
+      }
+    },
+    mounted: function (query) {
+      var _this = this;
+      var userNickName = G.Storage.get('nickNames').user || '用户';
+      var unitNickName = G.Storage.get('nickNames').unit || '单位';
+      G.ajax('/api/model/unit',function(_ret){
+        if (!_ret.errorMsg){
+          _this.selectComponent('#listpage').init({
+            getUrl: {
+              url: '/api/model/user',
+              data: {
+                //userName:{$ne:'admin'},
+                unitId: { $regex: query.unitId },
+                sql: 'unitUser_user'
+              }
+            },
+            models: {
+              userName:{
+                label:'用户名'
+              },
+              name:{
+                label:'姓名'
+              },
+              nickName:{
+                label:'昵称'
+              },
+              unitId:{
+                label:unitNickName,
+                attr:{
+                  actions:_ret
+                },
+                type:'select'
+              }
+            },
+            searchKey: 'name',
+            canBack:true,
+            canAdd:false,
+            actions: {
+              edit: {
+                action: function (event) {
+                  _this.edit(event);
+                },
+                name:'变更'
+              }
+            }
+          })
+          _this.load();
+          _this.setData({ unitNickName:unitNickName,attr: { actions: _ret }, unitId: query.unitId, title: query.name + ' ' + userNickName + '管理' });
+          G.setNavigationBarTitle({
+            title: query.name + ' ' + userNickName
+          })
+        }
+      },{
+        data:{
+          sql:'unitUser_unit'
+        }
+      })
+    }
+  });
+})(Y)
+</script>
+<style scoped>
+.list{
+  margin:32rpx;
+}
+.itemDiv{
+  padding:16rpx 0rpx;
+}
+.itemTitle{
+  padding-bottom:16rpx;
+}
+.userNoData{
+  text-align: center;
+  line-height: 96rpx;
+}
+</style>

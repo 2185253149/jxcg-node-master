@@ -1,0 +1,173 @@
+<template>
+    <master title="Element示例">
+      <div class="searchForm">
+        <div class="searchFormInputs">
+          <el-input
+            class="searchFormInput"
+              v-model="params.title"
+              placeholder="按标题查找"
+            ></el-input>
+        </div>
+        <el-button
+            type="primary"
+            icon="el-icon-search"
+            @click="searchList"
+            >查询</el-button>
+        <div class="searchFormBtn">
+          <el-button
+            type="danger"
+            icon="el-icon-plus"
+            @click="edit()"
+            >增加</el-button
+          >
+        </div>
+        <el-button type="primary" round>主要按钮</el-button>
+
+      </div>
+      <div class="el-table">
+        <el-table :data="rows" stripe style="width: 100%">
+          <el-table-column prop="photo" label="头图">
+            <template slot-scope="scope">
+              <img v-if="scope.row.img" class="photo" :src="APIURL + scope.row.img" />
+              <img v-else class="photo" src="@/assets/photo.png" />
+            </template>
+          </el-table-column>
+          <el-table-column prop="title" label="标题">
+          </el-table-column>
+          <el-table-column prop="author" label="作者">
+          </el-table-column>
+          <el-table-column label="操作" width="320">
+            <template slot-scope="scope">
+              <el-button
+                type="primary"
+                size="mini"
+                icon="el-icon-edit"
+                @click="edit(scope.row)"
+                >编辑</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="el-pagination">
+        <el-pagination
+          @size-change="sizeChange"
+          @current-change="currentChange"
+          :current-page="params.pageNum"
+          :page-sizes="[10, 100, 200, 300, 400]"
+          :page-size="params.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        >
+        </el-pagination>
+      </div>
+      <el-dialog :title="editForm.id ? '编辑新闻' : '新增新闻'" :visible.sync="visible">
+        <el-form ref="editForm" :model="editForm">
+          <el-form-item label="标题">
+            <el-input
+              v-model="editForm.title"
+              placeholder="标题"
+            ></el-input>
+          </el-form-item>
+          <el-form-item style="text-align: right;">
+            <el-button
+              type="primary"
+              @click="visible = false"
+              >取消</el-button
+            >
+            <el-button
+              type="danger"
+              @click="save"
+              >保存</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+    </master>
+  </template>
+  <script type="text/javascript">
+  (function (G) {
+  G.vue({
+    "usingComponents": {///引入组件
+      "master": "/components/Master/Master"///母版组件
+    },
+    "enablePullDownRefresh": true
+  },{
+    data:{
+      loading: false,
+      params: {
+        pageSize: 10,
+        pageNum: 1,
+        title: ""
+      },
+      total: 0,
+      rows: [],
+      visible:false,
+      editForm:{},
+      enterprise:[]
+    },
+    methods:{
+      edit(row){
+        if(row) {}
+        this.editForm = row ? row : {
+          title:'',
+          id:''
+        }
+        this.visible = true
+      },
+      save(){
+        this.$refs.editForm.validate((valid) => {
+          if (valid) {
+            if(this.editForm.id){
+              G.put('/api/model/article',this.editForm).then(res => {
+                if(!res.errorMsg) {
+                  this.visible = false
+                  G.toask('编辑新闻成功')
+                  this.params.pageNum = 1
+                  this.getList()
+                }
+              })
+            }else{
+              G.post('/api/model/article',this.editForm).then(res => {
+                if(!res.errorMsg) {
+                  this.visible = false
+                  G.toask('添加新闻成功')
+                  this.params.pageNum = 1
+                  this.getList()
+                }
+              })
+            }
+          }
+        })
+      },
+      sizeChange(pageSize) {
+        this.params.pageSize = pageSize;
+        this.params.pageNum = 1;
+        this.getList();
+      },
+      currentChange(pageNum) {
+        this.params.pageNum = pageNum;
+        this.getList();
+      },
+      searchList() {
+        this.params.pageNum = 1;
+        this.getList();
+      },
+      getList() {
+        this.loading = true;
+        G.get('/api/model/ggggg',this.params).then((res) => {
+          this.loading = false;
+          this.total = res.total;
+          this.rows = res.rows;
+        });
+      }
+    },
+    mounted() {
+      this.getList();
+    }
+  });
+  })(Y)
+  </script>
+  <style scoped>
+    
+  </style>

@@ -1,0 +1,19 @@
+.nodeName{
+    font-weight: bold;
+    text-align: center;
+    padding: 32px;
+    font-size:18px;
+}
+.tit{
+    margin-left: 32px;
+    font-weight: bold;
+    padding: 8px 0px;
+    color: #ccc;
+    border-bottom: 1px solid #e4e4d4;
+}
+.tit .arrow{
+    color: #409EFF;
+    font-size:14px;
+    cursor: pointer;
+    padding: 8px;
+}

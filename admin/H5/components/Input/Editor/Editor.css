@@ -1,0 +1,10 @@
+/* scoped */
+
+.editor{
+  height:100%;
+  line-height:150%;
+  font-size:28rpx;
+}
+.Web .editor{
+  font-size:14px;
+}

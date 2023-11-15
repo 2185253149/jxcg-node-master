@@ -1,0 +1,6 @@
+<div class="components_Input_Editor_Editor">
+<div class="editor">
+  <div :ref="name" :style="computStyle('height:{{heightStyle}};')" v-if="platform == 'Web'"></div>
+  <editor v-else :ref="name" :style="computStyle('height:{{heightStyle}};')" :read-only="disabled" :placeholder="placeholder" @change="change"></editor>
+</div>
+</div>

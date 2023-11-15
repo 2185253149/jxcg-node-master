@@ -1,0 +1,52 @@
+/* scoped */
+
+.onlyselectshowText{
+  min-height: 80rpx;
+}
+.Web .onlyselectshowText{
+  min-height: 32px;
+}
+.searchBox{
+  border-bottom:1rpx solid #e4e4e4;
+  padding:8rpx;
+}
+.onlyselectsearch{
+  padding:16rpx 32rpx;
+  border-bottom:1rpx solid #e4e4e4;
+}
+.Web .onlyselectsearch{
+  padding:4px 8px;
+}
+.onlyselectsearchText{
+  flex:1;
+  margin-left:8rpx;
+}
+.Web .onlyselectsearchText{
+  height: 32px;
+  width: 100px;
+}
+.onlyselectitems{
+  max-height:500rpx;
+  overflow:scroll;
+  margin-bottom:32rpx;
+}
+.Web .onlyselectitems{
+  max-height:240px;
+  margin-bottom:0px;
+}
+.onlyselectitem{
+  border-bottom:1rpx dashed #e4e4e4;
+  text-align: center;
+  line-height:200%;
+  padding:16rpx 32rpx;
+}
+.Web .onlyselectitem{
+  padding: 3px 8px;
+  cursor: pointer;
+}
+.onlyselectitem.active{
+  background:#e4f1ff;
+}
+.button{
+  line-height: 200%;
+}

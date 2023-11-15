@@ -1,0 +1,63 @@
+<template>
+  <div class="listSearchForms">
+    <div class="listSearchForm listSearchFormtitle" v-if="textstitle" :style="textstitleStyle">{{textstitle}}</div>
+    <div v-for="item,index in searchs" class="listSearchForm">
+      <mixinput :name="item.id" :type="item.type" :attr="item.attr" @change="change" :index="index" :value="searchValuesShow[0][item.id]"></mixinput>
+    </div>
+    <div v-if="searchs.length" class="listSearchForm" style="width: auto;">
+      <span class="button primary" @click="refresh">{{textssearchBtn}}</span>
+    </div>
+    <div class="listSearchFormButtons">
+      <span class="button" v-if="canBack" @click="$back">{{textsbackBtn}}</span>
+      <span class="button primary" v-if="canAdd" @click="add($event)">{{textsaddBtn}}</span>
+      <span class="button danger" v-if="canDelete&&canCheck&&rows.length" @click="delet(-1)">{{textsdeletsBtn}}</span>
+      <span class="button warning" v-if="exportUrl" @click="exportExcel">{{textsexportBtn}}</span>
+      <slot name="btns"></slot>
+    </div>
+    <div class="clear"></div>
+  </div>
+  <div class="tablestatistics" v-if="statisticsString">{{statisticsString}}</div>
+  <div class="table">
+    <table width="95%" border="0" cellPadding="0" cellSpacing="0">
+      <tr>
+        <th v-if="canCheck"><input type="checkbox" :checked="allChecked" @change="check(-1)" />{{textsallCheckBtn}}</th>
+        <th :colspan="item.colspan" v-for="item in models" v-if="item.label && !item.unList">{{item.label}}</th>
+        <th v-if="actions.length">操作</th>
+      </tr>
+      <tr v-for="item,index in rows">
+        <th v-if="canCheck"><input type="checkbox" :checked="item.checked" @change="check(index)" /></th>
+        <td :rowspan="item.rowspan && rowspans[key] && item.rowspan" v-for="item1,key in models" v-if="item1.label && !item1.unList && (!rowspan || !rowspans[key] || item.rowspan > 0)">
+          <a style="display: block;background: #f5f5f5;" v-if="item1.type == 'image'" target="_blank" :href="filter(item,key)"><img style="max-width: 50px;max-height: 50px;" :src="filter(item,key)" v-if="filter(item,key)" /></a>
+          <switch_ v-else-if="item1.type == 'switch'" @change="editList($event,item1,item)" type="checkbox" :checked="filter(item,key)"></switch_>
+          <span :style="item1.style || item[key + 'Style']" v-else-if="item1.type == 'input' || item1.type == 'textarea' || !item1.type"  :title="filter(item,key)[1]">{{filter(item,key)[0]}}</span>
+          <span :style="item1.style || item[key + 'Style']" v-else >{{filter(item,key)}}</span>
+        </td>
+        <td v-if="actions.length && (!rowspan || !rowspans.action || item.rowspan > 0)" :rowspan="item.rowspan && rowspans.action && item.rowspan">
+          <div style="line-height: 32px;">
+            <span v-for="act in actions" v-if="!item['dis_' + act.action]" :style="act.style" :class="act.className" @click="doAction(act.action,index,$event)">{{act.name}}</span>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <div style="text-align: center;color: #ccc;padding-top: 40px;" v-if="!rows.length">暂无数据..</div>
+    <div class="pagination">
+      <div class="paginationStatistics">
+        <span>共<label>{{total}}</label><label v-if="total>5">条</label></span>
+        <span v-if="total>5">当前第<label>{{searchValues.pageNum}}</label>页</span>
+        <span v-if="total>5">每页</span>
+        <select v-if="total>5" v-model="searchValues.pageSize" @change="refresh">
+          <option value="5">5</option>
+          <option v-if="total>5" value="10">10</option>
+          <option v-if="total>10" value="20">20</option>
+          <option v-if="total>20" value="50">50</option>
+          <option v-if="total>50" value="100">100</option>
+        </select>
+        <span>条数据</span>
+      </div>
+      <div>
+        <span :class="{button:true,mini:true,primary:paginate.isActive,disabled:paginate.unClick}" v-for="paginate,index in pagination" @click="pageChange(paginate)">{{paginate.name}}</span>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div>
+</template>

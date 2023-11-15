@@ -1,0 +1,1 @@
+var fs=require("fs"),files=fs.readdirSync("./router");module.exports=function(e){Config.authRouter&&e.app.use(Config.authRouter,e.loginRouter);for(var r=0;r<files.length;r++)"index.js"!=files[r]&&/\.js$/.test(files[r])&&require("./"+files[r])(e.app,e.models(),e.$,e.db,e)};

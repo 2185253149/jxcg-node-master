@@ -1,0 +1,128 @@
+<template>
+<master :title="title">
+  <div v-for="(item,index) in tree" key="id" class="list">
+    <div class="itemDiv">
+      <inputcheckbox :name="item.id" @change="change" :checked="values[item.id]">{{item.name}}</inputcheckbox>
+    </div>
+    <div v-if="item.children.length" class="listChild">
+      <div key="id" v-for="(item1,index1) in item.children">     <div class="itemDiv">
+          <inputcheckbox :name="item1.id" @change="change" :checked="values[item1.id]">{{item1.name}}</inputcheckbox>
+        </div>
+        <div v-if="item1.children.length" class="listChild">
+          <div key="id" v-for="(item2,index2) in item1.children">
+            <div class="itemDiv">
+              <inputcheckbox :name="item2.id" @change="change" :checked="values[item2.id]">{{item2.name}}</inputcheckbox>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex_row_default pageBtns">
+    <span class="button mini editBtn" @click="$back">返回</span>
+  </div>
+</master>
+</template>
+<script type="text/javascript">
+(function (G) {
+  var tree = {};
+  G.vue({
+  "usingComponents": {
+    "inputcheckbox": "/components/Input/Checkbox/Checkbox"
+  }
+},{
+    data: {
+      title: '',
+      values: {},
+      tree: [],
+      groupId:''
+    },
+    methods: {
+      findChildren: function (data) {
+        var rc = [];
+        if (this.getData('values')[data.id]) {
+          rc.push(data.id);
+          if (data.children.length) {
+            for (var i = 0; i < data.children.length; i++) {
+              rc = rc.concat(this.findChildren(data.children[i]));
+            }
+          }
+        }
+        return rc;
+      },
+      change: function (event) {
+        var _this = this;
+        var id = event.detail.id, values = this.getData('values'), meth = 'DELETE', data = { menuId: id, groupId: this.getData('groupId') };
+        var ids = this.findChildren(tree[id]);
+        if (!values[id]) {
+          meth = 'POST';
+        } else {
+          if (!ids.length) return false;
+          data.menuId = { $in: ids };
+          data.sql = { real: true };
+        }
+        G.ajax('/api/model/group_menu', function (ret) {
+          if (!ret.errorMsg) {
+            if(values[id]){
+              for (var i = 0; i < ids.length; i ++){
+                values[ids[i]] = false;
+              }
+            }else{
+              values[id] = !values[id];
+            }
+            _this.setData({ values: values });
+          }
+        }, {
+            meth: meth,
+            data: data
+          })
+      }
+    },
+    mounted: function (query) {
+      var _this = this;
+      G.ajax('/api/model/menu?sql=classifySort', function (ret) {
+        var values = {};
+        tree = { '0': { children: [] } }
+        for (var i = 0; i < ret.length; i++) {
+          ret[i].parentId = ret[i].parentId || '0';
+          ret[i].children = [];
+          tree[ret[i].id] = ret[i];
+          values[ret[i].id] = false;
+          if (tree[ret[i].parentId]) tree[ret[i].parentId].children.push(ret[i])
+        }
+        G.ajax('/api/model/group_menu', function (_ret) {
+          if (!_ret.errorMsg) {
+            for (var i = 0; i < _ret.length; i++) {
+              values[_ret[i].menuId] = true;
+            }
+            _this.setData({ tree: tree['0'].children, values: values, groupId: query.groupId, title: query.name + ' 菜单' });
+            G.setNavigationBarTitle({
+              title: query.name + ' 菜单'
+            })
+          }
+        }, {
+            data: {
+              groupId: query.groupId,
+              sql: 'groupMenu_group_menu'
+            }
+          })
+      })
+    }
+  });
+})(Y)
+</script>
+<style scoped>
+.list{
+  margin-left:32rpx;
+}
+.listChild{
+	margin-left:32rpx;
+}
+.itemDiv{
+	padding:8rpx 0px;
+	display: block;
+}
+.itemName{
+	
+}
+</style>

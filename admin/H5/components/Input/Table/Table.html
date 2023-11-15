@@ -1,0 +1,45 @@
+<div class="components_Input_Table_Table">
+<div :style="style" class="table">
+  <div v-if="!hideHead" class="tr">
+    <div class="th" v-for="(item,index) in th" :style="item.style || ''" key="index">
+      <span class="thText">{{item.label}}</span>
+    </div>
+    <div v-if="!disabled" class="th">
+      <span class="thText">操作</span>
+    </div>
+  </div>
+  <div class="tbody">
+    <div class="tr" v-for="(values,valueIndex) in td" key="index">
+      <div class="td" :style="item.style || ''" v-for="(item,index) in th" key="index">
+        <img v-if="item.type == 'image'" :src="values[item.id]" class="timage" :data-url="values[item.id]" @click="openImg"></img>
+        <span class="tvalue" v-else>{{values[item.id]}}</span>
+      </div>
+      <div class="td" v-if="!disabled">
+        <span :data-index="valueIndex" @click="edit" class="button mini">编辑</span>
+        <span :data-index="valueIndex" @click="delet" class="button mini danger">删除</span>
+      </div>
+    </div>
+    <div class="tr" v-if="!disabled">
+      <div class="td"><span class="button mini primary" @click="edit">+ 新增</span></div>
+    </div>
+  </div>
+  <modal :confirm-box-style="contentStyle" :title="editIndex == -1 ? '新增' : '修改'" :visible="show" @success="submit" @fail="closeEdit">
+    <div v-for="(item,index) in th" key="index">
+      <div class="tableLabel">
+        <span>{{item.label}}</span>
+        <span v-if="item.rule&&item.rule.NotNull" :style="computStyle('color:#ff0000;')">*</span>
+      </div>
+      <div>
+        <div v-if="item.type == 'onlyselect'" class="itemInput">
+          <onlyselect :skey="item.attr.skey" :sitem="item.attr.sitem" :index="index" :name="item.id" :disabled="disabled||item.readOnly" :url="item.attr.url" :title="item.attr.title" :data="item.attr.data" :placeholder="item.attr.placeholder" :search-key="item.attr.searchKey" :search-regex="item.attr.searchRegex" :can-clear="item.attr.canClear" :vkey="item.attr.vkey" :value="editValue[item.id]" @change="change"></onlyselect>
+        </div>
+        <div v-else-if="item.type == 'editor'" class="heightAuto">
+          <inputeditor :index="index" :name="item.id" :disabled="disabled||item.readOnly" :value="editValue[item.id]" :placeholder="item.attr && item.attr.placeholder" :file="item.attr && item.attr.file" @change="change"></inputeditor>
+        </div>
+        <mixinput v-else :name="item.id" :type="item.type" :attr="item.attr" :read-only="disabled||item.readOnly" :value="editValue[item.id]" @change="change" :index="index"></mixinput>
+      </div>
+      <span v-if="item.errorMsg" class="err">{{item.errorMsg}}</span>
+    </div>
+  </modal>
+</div>
+</div>

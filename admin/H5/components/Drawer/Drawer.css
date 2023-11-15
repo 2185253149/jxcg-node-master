@@ -1,0 +1,20 @@
+/* scoped */
+.drawerCover{
+  background: rgba(0,0,0,0.1);
+  position: fixed;
+  z-index: 4000;
+  left: 0rpx;
+  top:0rpx;
+  right: 0rpx;
+  bottom:0rpx;
+}
+
+.drawerContent{
+  background: #ffffff;
+  z-index: 4001;
+  position: fixed;
+  left: 0rpx;
+  bottom:0rpx;
+  right:0px;
+  overflow:auto;
+}

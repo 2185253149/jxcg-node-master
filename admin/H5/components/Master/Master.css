@@ -1,0 +1,294 @@
+.components_Master_Master .master{
+  background:#fff;
+  padding-bottom:32px;
+  min-height:100%;
+}
+.components_Master_Master .clear{
+  clear:both;
+}
+.components_Master_Master .top{
+    height: 96px;
+    position: fixed;
+    left: 0px;
+    top:0px;
+    right: 0px;
+    display: flex;
+    background-color: #fff;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-top:1px solid #e4e4e4;
+    border-bottom:1px solid #e4e4e4;
+    z-index:2000;
+}
+
+.Web .components_Master_Master .top{
+  height: 48px;
+  background: #fff;
+  color: initial;
+}
+
+.components_Master_Master .topEmpty{
+  height: 96px;
+}
+
+.Web .components_Master_Master .topEmpty{
+  height: 48px;
+}
+
+.components_Master_Master .topLeft{
+  text-align: left;
+  line-height: 96px;
+}
+
+.Web .components_Master_Master .topLeft{
+  line-height: 48px;
+  background: #5d5c5c;
+}
+.components_Master_Master .sysName{
+  color: #fff;
+  float: left;
+  margin-left:16px;
+}
+.components_Master_Master .logo{
+    width: 96px;
+    height: 96px;
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    float: right;
+}
+.Web .components_Master_Master .logo{
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+.components_Master_Master .loginImg{
+  width: 40px;
+  height: 28px;
+}
+.Web .components_Master_Master .loginImg{
+  width: 20px;
+  height: 14px;
+}
+
+.Web .components_Master_Master .logo{
+  font-size: 18px;
+  padding:0px 8px;
+}
+
+.components_Master_Master .title{
+  height: 96px;
+  line-height: 96px;
+  flex:1;
+  text-align: center;
+}
+
+.components_Master_Master .navtitle{
+  padding:16px;
+  flex: 1;
+  font-size: 16px;
+}
+.components_Master_Master .menu{
+  color: #fff;
+}
+.Web .components_Master_Master .menu{
+  font-size: 14px;
+}
+.components_Master_Master .menuText1{
+    cursor: pointer;
+    text-align: right;
+    margin:0px 32px;
+    border-bottom:1px dashed #737373;
+}
+.Web .components_Master_Master .menuText1{
+  margin:0px 16px;
+}
+.components_Master_Master .menuName1{
+  float: left;
+}
+.components_Master_Master .menuArrow1{
+    transform:rotate(-90deg);
+    width: 16px;
+    height: 16px;
+}
+.Web .components_Master_Master .menuArrow1{
+  width: 8px;
+  height: 8px;
+}
+.components_Master_Master .menuArrow1.active{
+  transform:rotate(0deg);
+}
+
+.components_Master_Master .menuBox1{
+  background:#3e3e3e;
+}
+
+.components_Master_Master .menu2{
+    line-height: 80px;
+    padding:0px 8px;
+    cursor: pointer;
+    clear: both;
+}
+.Web .components_Master_Master .menu2{
+  line-height: 40px;
+  padding:0px 4px;
+  margin-left: 12px;
+  color: #cac6c6;
+}
+
+.components_Master_Master .menuText2{
+    margin-left: 32px;
+}
+.Web .components_Master_Master .menuText2{
+  margin-left:16px;
+}
+
+.components_Master_Master .menuRight2{
+    float: right;
+}
+
+.components_Master_Master .menuArrow2{
+    position: relative;
+    transform:rotate(-90deg);
+    width: 16px;
+    height: 16px;
+    margin-left:32px;
+}
+.components_Master_Master .menuArrow2.active{
+  transform:rotate(0deg);
+}
+.Web .components_Master_Master .menuArrow2{
+  width: 8px;
+  height: 8px;
+  margin-left:16px;
+}
+.components_Master_Master .menuBox2{
+    margin-left:32px;
+}
+.Web .components_Master_Master .menuBox2{
+    margin-left:16px;
+}
+.components_Master_Master .menu3{
+    text-align: left;
+    margin:0px 8px;
+    clear: both;
+}
+.Web .components_Master_Master .photo{
+  margin:0px 4px;
+}
+
+.components_Master_Master .photo{
+    width: 72px;
+    height: 72px;
+    border-radius: 36px;
+    margin-top: 4px;
+    margin-right: 16px;
+    cursor: pointer;
+}
+.components_Master_Master .menuText1.active,.components_Master_Master .menuText2.active,.menuText3.active{
+  color: #e6e23c;
+}
+
+.Web .components_Master_Master .photo{
+  width: 32px;
+  height: 32px;
+  border-radius: 20px;
+  margin-right: 16px;
+}
+
+.components_Master_Master .user{
+    background: #fff;
+    padding:32px;
+    border-radius: 5px;
+    text-align: left;
+    color: #666;
+}
+
+.Web .components_Master_Master .user{
+  padding:16px;
+}
+
+.components_Master_Master .nickName{
+    border-bottom: 1px solid #ccc;
+    border-color: rgba(0,0,0,0.1);
+    height: 64px;
+    line-height: 64px;
+    overflow: hidden;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.Web .components_Master_Master .nickName{
+  height: 32px;
+  line-height: 32px;
+  margin-bottom: 8px;
+}
+
+.components_Master_Master .group{
+    cursor: pointer;
+    padding-bottom: 32px;
+    padding-top:16px;
+    clear: both;
+}
+
+.Web .components_Master_Master .group{
+  padding-bottom: 18px;
+  padding-top:8px;
+}
+
+.components_Master_Master .groupStyle{
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    background: #ccc;
+    float: left;
+    margin-right: 16px;
+    margin-top:6px;
+}
+
+.Web .components_Master_Master .groupStyle{
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    margin-top:4px;
+}
+
+.components_Master_Master .groupActive .groupStyle{
+    background: #2f8ccd;
+}
+
+.components_Master_Master .groupName{
+    float: left;
+}
+
+.components_Master_Master .clear{
+  clear: both;
+}
+.components_Master_Master .logout{
+  position: absolute;
+  bottom:0px;
+  width: 100%;
+}
+.components_Master_Master .logoutBtn{
+  display: block;
+  height: 96px;
+  margin:32px;
+  line-height: 96px;
+  border-radius: 8px;
+  color: #ffffff;
+  background:#ff0000;
+  text-align: center;
+}
+.Web .components_Master_Master .logout{
+  position: initial;
+  bottom:auto;
+}
+.Web .components_Master_Master .logoutBtn{
+  height: 32px;
+  margin:16px;
+  line-height: 32px;
+  cursor: pointer;
+  border-radius: 4px;
+}

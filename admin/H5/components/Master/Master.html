@@ -1,0 +1,67 @@
+<div class="components_Master_Master"><div class="master">
+  <div class="top" v-if="showTop" :style="webMaster ? 'width:200px;background:none;' : ''">
+    <div class="topLeft" :style="platform == 'Web' && show ? (webMaster ? 'width:200px' : 'width:200px;opacity: 0;') : ''">
+      <span v-if="show && name" class="sysName">{{name}}</span>
+      <div class="logo" @click="openMenus">
+        <img class="loginImg" src="/images/sidebar-toggle-light.png"></img>
+      </div>
+      <drawer :content-style="drawerStyle" :cover-style="platform == 'Web' ? 'display:none;' : ''" :visible="show" @close="openMenus">
+        <div class="menu" v-if="show">
+          <div class="menu1" v-for="(menu1,index1) in tree" key="id">
+            <div :class="menu1.id == checkedId ? 'menuText1 active' : 'menuText1'" :data-index="index1" @click="openMenu">
+              <span class="menuName1">{{menu1.name}}</span>
+              <img :class="menu1.active ? 'menuArrow1 active' : 'menuArrow1'" v-if="menu1.children.length" src="/images/arrow_down.png"></img>
+              <div class="clear"></div>
+            </div>
+            <div class="menuBox1" v-if="menu1.children.length && menu1.active">
+              <div class="menu2" v-for="(menu2,index2) in menu1.children" key="id">
+                <div :class="menu2.id == checkedId ? 'menuText2 active' : 'menuText2'"  :data-index="index1 + ',' + index2" @click="openMenu">
+                  <span class="menuName2">{{menu2.name}}</span>
+                  <img :class="menu2.active ? 'menuArrow2 active' : 'menuArrow2'" v-if="menu2.children.length" src="/images/arrow_down.png"></img>
+                  <div class="clear"></div>
+                </div>
+                <div class="menuBox2" v-if="menu2.children.length && menu2.active">
+                  <div class="menu3" v-for="(menu3,index3) in menu2.children" key="id">
+                    <div :class="menu3.id == checkedId ? 'menuText3 active' : 'menuText3'" :data-index="index1 + ',' + index2 + ',' + index3" @click="openMenu">
+                      <span disabled>{{menu3.name}}</span>
+                      <div class="clear"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </drawer>
+    </div>
+    <div class="navtitle" v-if="platform == 'Web'" :style="webMaster ? 'display: none;' : ''">
+      <span>{{title}}</span>
+      <slot name="title"></slot>
+    </div>
+    <div v-else class="title">
+      <span>{{title}}</span>
+      <slot name="title"></slot>
+    </div>
+    <img v-if="!webMaster" @mouseover="openUser" :src="userInfo.photo||'/images/avatar.jpg'" class="photo" @click="openUser"></img>
+  </div>
+  <drawer :content-style="userDrawerStyle" :visible="userShow" @close="openUser">
+    <div class="user">
+      <span class="nickName">{{userInfo.nickName}}</span>
+      <div class="groups">
+        <div :class="item.groupId == groupId ? 'groupActive group' : 'group'" v-for="(item,index) in userInfo.groups" :data-id="item.groupId" key="groupId" @click="changeGroup">
+          <div class="groupStyle"></div>
+          <div class="groupName">{{item.name}}</div>
+          <div class="clear"></div>
+        </div>
+      </div>
+    </div>
+    <div class="clear logout">
+      <!-- <span class="logoutBtn" @click="changePassWord">修改密码</span> -->
+      <span class="logoutBtn" type="warn" @click="logout">退出登录</span>
+    </div>
+  </drawer>
+  <div v-if="showTop" class="topEmpty"></div>
+  <div :style="platform == 'Web' && show ? 'margin-left:200px;' : ''">
+    <slot></slot>
+  </div>
+</div></div>

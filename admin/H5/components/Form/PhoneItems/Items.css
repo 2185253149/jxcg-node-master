@@ -1,0 +1,100 @@
+/* scoped */
+/*scoped*/
+.formItems{
+  padding-bottom:16rpx;
+  background:#f1f1f1;
+}
+.formItems .formItemsBox{
+  margin:0rpx 24rpx;
+  background: #fff;
+}
+.formItems .formDivAll{
+  border-bottom: 1rpx solid #e4e4e4;
+  margin: 0rpx 16rpx;
+}
+.formItems .formDiv{
+  border-bottom: 1rpx solid #e4e4e4;
+  display: flex;
+  margin: 0rpx 16rpx;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.formSwitch{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin:24rpx;
+}
+.Web .formSwitch{
+  display:initial;
+  margin-right:initial;
+  margin-top:initial;
+  margin-bottom:initial;
+}
+.Web .formItems .formDiv{
+  width: 240px;
+  height: 80px;
+  overflow:hidden;
+  float: left;
+  display: block;
+  border-bottom: none;
+}
+.formItems .formLabel{
+  padding: 16rpx 0px;
+  width: 160rpx;
+}
+.formItems .formInput{
+  flex:1;
+  overflow: auto;
+}
+.Web .formItems .formLabel{
+  padding: 8rpx 0px;
+}
+.formItems .formErr{
+  color: #fff;
+  font-size:24rpx;
+  position: absolute;
+  background: rgba(255,0,0,0.7);
+  padding:8rpx 16rpx;
+  border-radius: 8rpx;
+}
+.Web .formItems .formErr{
+  font-size:12px;
+}
+.itemInput{
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: left;
+  padding:0rpx 16rpx;
+  overflow:hidden;
+}
+.Web .itemInput{
+  width: 90%;
+  height: 32px;
+  line-height: 32px;
+  border:1rpx solid #e4e4e4;
+  padding:0rpx 8px;
+}
+.heightAuto{
+  width: 650rpx;
+  height: auto;
+  text-align: left;
+  padding:0rpx 16rpx;
+  border:1rpx solid #e4e4e4;
+  line-height: 150%;
+}
+.formTitle{
+  margin:24rpx 0rpx;
+  background:#f1f1f1;
+  color: #999;
+}
+.tips{
+  margin-top:24rpx;
+}
+.tip{
+  margin:24rpx;
+  color:#ff0000;
+}

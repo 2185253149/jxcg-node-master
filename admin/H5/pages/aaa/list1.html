@@ -1,0 +1,251 @@
+<template>
+  <master title="计分标准">
+    <listpage ref="listpage"></listpage>
+    <div class="searchForm">
+      <div class="searchFormInputs">
+        <el-input
+          class="searchFormInput"
+            v-model="params.title"
+            placeholder="按标题查找"
+          ></el-input>
+      </div>
+      <el-button
+          type="primary"
+          icon="el-icon-search"
+          @click="searchList"
+          >查询</el-button>
+      <div class="searchFormBtn">
+        <el-button
+          type="danger"
+          icon="el-icon-plus"
+          @click="edit()"
+          >增加</el-button
+        >
+      </div>
+    </div>
+    <div class="el-table">
+      <el-table :data="rows" stripe style="width: 100%">
+        <el-table-column label="序号" type="index" align="center"></el-table-column>
+        <el-table-column prop="type" label="记分类别">
+          <template slot-scope="scope">
+            <div v-if="scope.row.type==1">本科教学质量工程</div>
+            <div v-if="scope.row.type==2">教育教学研究项目</div>
+            <div v-if="scope.row.type==3">教学技能比赛</div>
+            <div v-if="scope.row.type==4">教育教学成果获奖</div>
+            <div v-if="scope.row.type==5">育人成效</div>
+            <div v-if="scope.row.type==6">教材</div>
+            <div v-if="scope.row.type==7">教育教学研究论文</div>
+            <div v-if="scope.row.type==8">学校专项教育教学项目</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="abc" label="分级">
+          <template slot-scope="scope">
+            <div v-if="scope.row.type==1">A</div>
+            <div v-if="scope.row.type==2">B</div>
+            <div v-if="scope.row.type==3">C</div>
+            <div v-if="scope.row.type==4">D</div>
+            <div v-if="scope.row.type==5">专业建设</div>
+            <div v-if="scope.row.type==6">其他临时性项目</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="grade" label="等级">
+          <template slot-scope="scope">
+            <div v-if="scope.row.type==1">A1</div>
+            <div v-if="scope.row.type==2">A2</div>
+            <div v-if="scope.row.type==3">B1</div>
+            <div v-if="scope.row.type==4">B2</div>
+            <div v-if="scope.row.type==5">C1</div>
+            <div v-if="scope.row.type==6">C2</div>
+            <div v-if="scope.row.type==7">D</div>
+            <div v-if="scope.row.type==8">重大</div>
+            <div v-if="scope.row.type==9">重点</div>
+            <div v-if="scope.row.type==10">一般</div>
+            <div v-if="scope.row.type==11">国家级</div>
+            <div v-if="scope.row.type==12">省部级</div>
+            <div v-if="scope.row.type==13">校级</div>
+            <div v-if="scope.row.type==14">新专业申报</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="sub_grade" label="子等级">
+          <template slot-scope="scope">
+            <div v-if="scope.row.type==1">本科教学质量工程</div>
+            <div v-if="scope.row.type==2">教育教学研究项目</div>
+            <div v-if="scope.row.type==3">教学技能比赛</div>
+            <div v-if="scope.row.type==4">教育教学成果获奖</div>
+            <div v-if="scope.row.type==5">育人成效</div>
+            <div v-if="scope.row.type==6">教材</div>
+            <div v-if="scope.row.type==7">教育教学研究论文</div>
+            <div v-if="scope.row.type==8">学校专项教育教学项目</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="scroe" label="计分标准">
+        </el-table-column>
+        <el-table-column label="操作" width="320">
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-edit"
+              @click="edit(scope.row)"
+              >编辑</el-button
+            >
+            <el-button
+              type="danger"
+              size="mini"
+              icon="el-icon-edit-outline"
+              @click="removeRow(scope.row)"
+              >删除
+              </el-button>
+
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <!-- 分页 -->
+    <div class="el-pagination">
+      <el-pagination
+        @size-change="sizeChange"
+        @current-change="currentChange"
+        :current-page="params.pageNum"
+        :page-sizes="[5,10, 100, 200, 300, 400]"
+        :page-size="params.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
+    </div>
+    <el-dialog :title="editForm.id ? '编辑新闻' : '新增新闻'" :visible.sync="visible">
+      <el-form ref="editForm" :model="editForm">
+        <el-form-item label="标题">
+          <el-input
+            v-model="editForm.title"
+            placeholder="标题"
+          ></el-input>
+        </el-form-item>
+        <el-form-item style="text-align: right;">
+          <el-button
+            type="primary"
+            @click="visible = false"
+            >取消</el-button
+          >
+          <el-button
+            type="danger"
+            @click="save"
+            >保存</el-button
+          >
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </master>
+</template>
+<script type="text/javascript">
+(function (G) {
+G.vue({
+  "usingComponents": {///引入组件
+    "master": "/components/Master/Master",///母版组件
+  },
+  "enablePullDownRefresh": true
+},{
+  data:{
+    loading: false,
+    params: {
+      pageSize: 10,
+      pageNum: 1
+    },
+    total: 0,
+    rows: [],
+    visible:false,
+    editForm:{},
+    // tableform: [],
+    enterprise:[]
+  },
+
+  methods:{
+    
+    edit(row){
+      if(row) {}
+      this.editForm = row ? row : {
+        title:'',
+        id:''
+      }
+      this.visible = true
+    },
+    save(){
+      this.$refs.editForm.validate((valid) => {
+        if (valid) {
+          if(this.editForm.id){
+            G.put('/api/model/article',this.editForm).then(res => {
+              if(!res.errorMsg) {
+                this.visible = false
+                G.toask('编辑新闻成功')
+                this.params.pageNum = 1
+                this.getList()
+              }
+            })
+          }else{
+            G.post('/api/model/article',this.editForm).then(res => {
+              if(!res.errorMsg) {
+                this.visible = false
+                G.toask('添加新闻成功')
+                this.params.pageNum = 1
+                this.getList()
+              }
+            })
+          }
+        }
+      })
+    },
+    sizeChange(pageSize) {
+      console.log("aaaa",pageSize)
+      this.params.pageSize = pageSize;
+      this.params.pageNum = 1;
+      this.getList();
+    },
+    currentChange(pageNum) {
+      console.log("bbbb",pageNum)
+      this.params.pageNum = pageNum;
+      this.getList();
+    },
+    searchList() {
+      this.params.pageNum = 1;
+      this.getList();
+    },
+    getList() {
+      this.loading = true;
+      G.get('/api/model/standard',this.params).then((res) => {
+        console.log(res);
+        this.loading = false;
+        this.total = res.total;
+        this.rows = res.rows;
+      });
+    },
+    removeRow(row) {
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // this.rows.splice(index, 1)
+        this.rows = this.rows.filter(item => item !== row);
+        this.$message({
+          type: 'success',
+          message: '删除成功!',
+        })
+      }).catch((err) => {
+        this.$message({
+          type: 'error',
+          message: err
+        })
+      })
+    },
+  },
+  
+  mounted() {
+    this.getList();
+  },
+});
+  })(Y)
+</script>
+<style scoped>
+  
+</style>

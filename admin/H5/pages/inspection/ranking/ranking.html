@@ -1,0 +1,30 @@
+<template>
+    <!--巡查劳模排行  -->
+    <div>
+        <div class="rank-box">
+            <div class="rank-title">
+                <div style="margin-left: 20px;font-size:20px;">今日步数排行</div>
+                <!-- <div style="display: flex;align-items: center;margin-right: 20px;">
+                    <span>记录区间：</span>
+                    <el-radio-group v-model="type" size="small">
+                        <el-radio-button label="部门"></el-radio-button>
+                        <el-radio-button label="人" ></el-radio-button>
+                    </el-radio-group>
+                </div> -->
+            </div>
+            <div class="rank-div">
+                <div v-for="(i,index) in unit" :key="index">
+                    <div class="div-content111" >
+                        <div class="ranking-text">{{i.name}}</div>
+                        <div style="margin-right: 5px;">
+                            <span style="font-size: 18px">{{i.value}}</span>
+                        </div>
+                    </div>
+                    <!-- 下划线 -->
+                    <div style="width: 80%;height:1px;margin: 0 auto;background-color: #e6e6e6;border-radius: 30px;"></div>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+</template>

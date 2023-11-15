@@ -1,0 +1,285 @@
+<template>
+  <master :title="title">
+    <listpage ref="listpage">
+      <el-button style="margin-left: 16px;" slot="btns" type="primary" @click="openUpload">企业微信用户导入<i
+          class="el-icon-upload el-icon--right"></i></el-button>
+    </listpage>
+    <el-dialog title="导入企业微信通讯录" :visible.sync="visible">
+      <el-form ref="editForm">
+        <el-form-item style="text-align: center;">
+          <el-select v-model="unitId" placeholder="请选择单位">
+            <el-option v-for="item in units" :key="item.id" :label="item.name" :value="item.unitId">
+            </el-option>
+          </el-select>
+          <el-select v-model="enterpriseId" clearable placeholder="请选择企业">
+            <el-option v-for="item in enterprises" :key="item.id" :label="item.name" :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item style="text-align: center;">
+
+        </el-form-item>
+        <el-form-item style="text-align: center;">
+          <el-upload drag :before-upload="beformUpload" action="https://jsonplaceholder.typicode.com/posts/" multiple>
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+            <div class="el-upload__tip" slot="tip">请在企业微信管理后台下载通讯录后导入</div>
+          </el-upload>
+          <div v-if="postNum || putNum || failNum">
+            共{{uploadUsers.length - 9}}条数据，当前新增成功{{postNum}}条，更新成功{{putNum}}条，失败{{failNum}}条
+          </div>
+        </el-form-item>
+        <el-form-item style="text-align: right;">
+          <el-button type="danger" @click="save">开始导入</el-button>
+          <el-button type="primary" @click="visible = false">关闭</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </master>
+</template>
+<script type="text/javascript">
+  (function (G) {
+    var _this;
+    function getPassWordByPhone(phone){
+      phone = phone || 'jlphwc'
+      if(phone.length > 6) phone = phone.substring(phone.length - 6,phone.length)
+      return G.MD5(phone)
+    }
+    G.vue({
+      "usingComponents": {
+        "master": "/components/Master/Master",
+        "listpage": "/components/List/Table/Table"
+      },
+      "enablePullDownRefresh": true
+    }, {
+      data: {
+        title: '',
+        modelName: '',
+        models: {},
+        platform: G.platform,
+        visible: false,
+        uploadUsers: [],
+        postNum: 0,
+        putNum: 0,
+        failNum: 0,
+        units: [],
+        unitId: 'hw',
+        enterprises: [],
+        enterpriseId: 'hw'
+      },
+      methods: {
+        openUpload() {
+          this.successNum = 0
+          this.failNum = 0
+          this.uploadUsers = []
+          this.visible = true
+        },
+        beformUpload(file) {
+          let reader = new FileReader()
+          reader.onload = ev => {
+            let workBook = XLSX.read(ev.target.result, { type: 'binary', cellDates: true })
+            let workSheet = workBook.Sheets[workBook.SheetNames[0]]
+            const data = XLSX.utils.sheet_to_json(workSheet)
+            this.uploadUsers = data
+          }
+          reader.readAsBinaryString(file)
+        },
+        save() {
+          let promises = []
+          let item = new G.Item()
+          item._do()
+          this.putNum = 0
+          this.postNum = 0
+          this.failNum = 0
+          for (let i = 9; i < this.uploadUsers.length; i++) {
+            item._push((next) => {
+              let row = this.uploadUsers[i]
+              let user = {
+                unitId: this.unitId,
+                enterpriceId:this.enterpriseId,
+                userName: row.__EMPTY,
+                name: row['填写须知：'] || row.__EMPTY_1,
+                nickName: row.__EMPTY_1 || row['填写须知：'],
+                dept: row.__EMPTY_3,
+                sex: row.__EMPTY_4 == '男' ? 1 : 2,
+                phone: row.__EMPTY_5,
+                passWord: getPassWordByPhone(row.__EMPTY_5),
+                //是否启用
+                //status: row.__EMPTY_11 == '已激活' ? 1 : 0,
+                status:1,
+                //是否开启
+                wxNotify: row.__EMPTY_13 == '已关注' ? 1 : 0,
+                source: 'wecom'
+              }
+              G.get('/api/model/user', { phone: user.phone }).then(res => {
+                if (res.length) {
+                  user.id = res[0].id
+                  G.put('/api/model/user', user).then(res => {
+                    if (!res.errorMsg) {
+                      this.putNum++
+                    } else {
+                      this.failNum++
+                    }
+                    next()
+                  })
+                } else {
+                  G.post('/api/model/user', user).then(res => {
+                    if (!res.errorMsg) {
+                      this.postNum++
+                    } else {
+                      this.failNum++
+                    }
+                    next()
+                  })
+                }
+              })
+            })
+          }
+          item._push(next => {
+            //this.visible = false
+          })
+        },
+        load: function (next) {
+          this.selectComponent('#listpage').load(next);
+        },
+        refresh: function (next) {
+          this.selectComponent('#listpage').refresh(next);
+        },
+        onPullDownRefresh: function (event) {
+          this.refresh(function () {
+            G.stopPullDownRefresh();
+          })
+        },
+        onReachBottom: function (event) {
+          this.load();
+        },
+        edit: function (event) {
+          var modeleditquery = {
+            values: {},
+            refresh: this.refresh,
+            models: this.getData('models'),
+            url: '/api/model/' + this.getData('modelName')
+          }
+          var userNickName = G.Storage.get('nickNames').user || '用户';
+          modeleditquery.models.name.rule = { NotNull: true, Name: true };
+          if(G.Storage.get('userType') == 'sfkh'){
+            modeleditquery.values.enterpriceId = G.Storage.get('userInfo').enterpriceId
+            modeleditquery.models.enterpriceId = null
+          }
+          if (event.type == 'edit') {
+            modeleditquery.values = event.detail;
+            modeleditquery.title = '修改' + userNickName + '信息';
+            modeleditquery.meth = 'PUT';
+          } else {
+            modeleditquery.title = '新增' + userNickName;
+            modeleditquery.meth = 'POST';
+            modeleditquery.submit = (data,query) => {
+              data.passWord = getPassWordByPhone(data.phone)
+              return data
+            }
+          }
+          G.Storage.set('modeleditquery', modeleditquery);
+          this.$go('/pages/model/edit/edit');
+        }
+      },
+      mounted: function (query) {
+        query = {
+          modelName: 'user',
+          nickName: G.Storage.get('nickNames').user || '用户'
+        }
+        var title = query.nickName;
+        var groupNickName = G.Storage.get('nickNames').group || '权限';
+        var _this = this;
+        G.get('/api/model/unit').then(units => {
+          this.units = units
+        })
+        G.get('/api/model/hw_res_enterprise').then(enterprises => {
+          this.enterprises = enterprises
+        })
+        G.ajax('/model/user', function (ret) {
+          ret.phone.rule.NotNull = true
+          if (!ret.errorMsg) {
+            let getUrl = '/api/model/user?sql=userList_user',searchKey = 'name'
+            if(G.Storage.get('userType') == 'sfkh'){
+              getUrl += '&enterpriceId=' + G.Storage.get('userInfo').enterpriceId
+            }else{
+              searchKey += ',enterpriceId'
+            }
+            _this.selectComponent('#listpage').init({
+              getUrl,
+              models: ret,
+              searchKey,
+              edit: {
+                status: '/api/model/user'
+              },
+              actions: {
+                add: {
+                  action: function (event) {
+                    _this.edit(event);
+                  },
+                  name: '新增'
+                },
+                edit: {
+                  action: function (event) {
+                    _this.edit(event);
+                  },
+                  name: '修改'
+                },
+                editgroup: {
+                  className: 'danger',
+                  action: function (event) {
+                    if(G.Storage.get('userType') == 'sfkh'){
+                      G.$go('/pages/user/group/sfkh?userId=' + event.detail.id + '&name=' + (event.detail.name || event.detail.nickName || event.detail.userName));
+                    }else{
+                      G.$go('/pages/user/group/group?userId=' + event.detail.id + '&name=' + (event.detail.name || event.detail.nickName || event.detail.userName));
+                    }
+                  },
+                  name: '分配' + groupNickName
+                },
+                resetpassword: {
+                  className: 'warning',
+                  action: function (event) {
+                    G.confirmx('确定要重置此' + query.nickName + '的密码?重置后新密码为手机号后6位', function () {
+                      G.ajax('/api/model/user', function (ret) {
+                        if (!ret.errorMsg) G.alertx('重置密码成功!')
+                      }, {
+                        meth: 'PUT',
+                        data: {
+                          passWord: getPassWordByPhone(event.detail.phone),
+                          id: event.detail.id
+                        }
+                      })
+                    })
+                  },
+                  name: '重置密码'
+                }
+              }
+            })
+            _this.load();
+            _this.setData({ models: ret, title: title, modelName: query.modelName });
+          }
+        }, {
+          storageName: query.modelName + 'Model'
+        })
+      }
+    });
+  })(Y)
+</script>
+<style scoped>
+  .list {
+    margin: 32rpx;
+  }
+
+  .itemDiv {
+    padding: 16rpx 0rpx;
+  }
+
+  .itemTitle {
+    padding-bottom: 16rpx;
+  }
+
+  .userNoData {
+    text-align: center;
+    line-height: 96rpx;
+  }
+</style>

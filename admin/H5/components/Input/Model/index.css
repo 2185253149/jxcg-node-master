@@ -1,0 +1,14 @@
+/* scoped */
+
+.modelIndex{
+    border-bottom:1rpx solid #e4e4e4;
+    padding-bottom:16rpx;
+}
+.modelIndexTitle{
+    margin:16rpx 32rpx;
+    padding-bottom: 32rpx;
+    border-bottom: 1rpx solid #e4e4e4;
+}
+.modelIndexTitleText{
+    flex: 1;
+}

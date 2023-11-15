@@ -1,0 +1,13 @@
+<div class="components_Modal_Modal">
+<div v-if="visible" class="confirm" :style="backgroundStyle">
+  <div class="confirmBox" :style="confirmBoxStyle">
+    <div class="confirmTop"><span class="confirmTopTitle" :style="titleStyle">{{title}}</span><slot name="title"></slot></div>
+    <div class="confirmCenter" :style="contentStyle">{{content}}<slot></slot></div>
+    <div class="confirmBottom">
+      <button_ v-if="showCancel" :style="cancelStyle" class="confirmBtn" @click="_fail">{{cancelText}}</button_>
+      <button_ v-if="showConfirm" :style="confirmStyle" class="confirmBtn confirmOk" @click="_success">确定</button_>
+      <slot name="btns"></slot>
+    </div>
+  </div>
+</div>
+</div>

@@ -1,0 +1,29 @@
+/* scoped */
+.box{
+  height: 50rpx;
+  border:1rpx solid #c7c7c7;
+  border-radius: 8rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 50rpx;
+  text-align: center;
+  font-size:40rpx;
+}
+.left{
+  width: 50rpx;
+  border-right:1rpx solid #c7c7c7;
+  line-height: 40rpx;
+  height: 50rpx;
+}
+.right{
+  width: 50rpx;
+  border-left:1rpx solid #c7c7c7;
+  line-height: 40rpx;
+  height: 50rpx;
+}
+.input{
+  flex: 1;
+  font-size:20rpx;
+}

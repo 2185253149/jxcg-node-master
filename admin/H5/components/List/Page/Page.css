@@ -1,0 +1,184 @@
+/* scoped */
+.search{
+  margin: 16rpx;
+}
+.searchBtns{
+  display: flex;
+  position: absolute;
+  width: 100%;
+  bottom:0rpx;
+}
+.searchBtn{
+  flex: 1;
+  line-height: 96rpx;
+  text-align: center;
+  background: #409eff;
+  color: #fff;
+  bottom:0rpx;
+  border-top:1rpx solid #409eff;
+}
+.searchClear{
+  background: #fff;
+  color: initial;
+  border-top:1rpx solid #e4e4e4;
+}
+.searchFormButtons{
+  position: fixed;
+  height: 88rpx;
+  background: #fff;
+  bottom: 0rpx;
+  padding-left: 16rpx;
+  align-items:center;
+  left: 0rpx;
+  right: 0rpx;
+  border-top:1rpx solid #ccc;
+  z-index: 1000;
+  display: flex;
+}
+.listRowsEmpty{
+  height: 90rpx;
+}
+.noedit{
+  position: fixed;
+  bottom: 32rpx;
+  right: 0rpx;
+  z-index: 2000;
+  padding:24rpx 16rpx;
+  color: #fff;
+  background: #414ea5;
+}
+.Web .searchFormButtons{
+  position: inherit;
+  padding: 8px 0px 0px 0px;
+  float: right;
+  height:auto;
+  text-align: right;
+  border:1rpx solid #fff;
+}
+.searchFormButtonsTitle{
+  padding: 32rpx 16rpx;
+  font-size:32rpx;
+}
+.Web .searchFormButtonsTitle{
+  float: none;
+  font-size:18rpx;
+}
+.searchFormButton{
+  line-height: 88rpx;
+  background: #fff;
+  border-right:1rpx solid #dcdfe6;
+  border-top:1rpx solid #dcdfe6;
+  flex:1;
+  text-align: center;
+}
+.Web .searchFormButton{
+  line-height: auto;
+  padding:16rpx 32rpx;
+  border-radius: 8rpx;
+  border-top:none;
+  border-right:none;
+  margin-left:8rpx;
+}
+.searchFormButton.add{
+  background: #409eff;
+  color: #fff;
+  border-top:1rpx solid #409eff;
+  border-right:1rpx solid #409eff;
+}
+.searchBtn{
+  flex:1;
+  line-height: 96rpx;
+  border-top:1rpx solid #ccc;
+  margin-left:0rpx;
+}
+.Web .searchBtn{
+  flex:inherit;
+  line-height: inherit;
+  padding:8px 16px;
+  margin-right:16px;
+}
+.tcheck{
+  height: 64rpx;
+  overflow: hidden;
+  padding-left: 16rpx;
+}
+.actionsBtn{
+  position: absolute;
+  right: 16rpx;
+  font-size:32rpx;
+  color: #666;
+  font-weight:bold;
+  z-index: 1000;
+}
+.tr{
+  border-top:8rpx solid #f4f4f4;
+  padding:16rpx 0rpx;
+  background: #fff;
+}
+.tds{
+  flex: 1;
+}
+.td{
+  padding:16rpx;
+  display: flex;
+  align-items: center;
+}
+.hide{
+  display:none;
+}
+.th{
+  margin-right: 16rpx;
+  width:200rpx;
+}
+.tvalue{
+  flex: 1;
+  word-wrap:break-word;
+}
+.trBottom{
+  display: flex;
+  align-items: center;
+  padding-top:16rpx;
+  border-top:1rpx solid #e4e4e4;
+  padding-left:16rpx;
+}
+.listMore{
+  color:#1e58af;
+  margin:16rpx;
+}
+.timage{
+  width: 150rpx;
+  height: 150rpx;
+  overflow: hidden;
+}
+.action{
+  margin:8rpx;
+  border:1rpx solid #e4e4e4;
+  border-radius: 4rpx;
+  padding:8rpx 16rpx;
+  text-align: center;
+}
+.checkbox{
+  width: 40rpx;
+  height: 40rpx;
+}
+.tablesTop{
+  position: fixed;
+  left: 0rpx;
+  right: 0rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  padding: 0rpx 16rpx;
+  background: #f5f3ff;
+}
+.tablesEmpty{
+  height: 52rpx;
+}
+.tablestatistics{
+  padding:16rpx;
+}
+.Web .tablestatistics{
+  padding-bottom: 0px;
+}
+.tableCheckBox{
+  width:60rpx;
+}

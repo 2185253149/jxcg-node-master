@@ -1,0 +1,19 @@
+<div class="components_Input_OnlySelect_OnlySelect">
+<div>
+  <div @click="openDrawer" class="onlyselectshowText">{{value1[skey] || placeholder || ''}}</div>
+  <drawer :content-style="contentStyle" :visible="show" @close="openDrawer">
+    <div class="onlyselectsearch flex_row_default">
+      <span class="onlyselectsearchTitle">{{title}}</span>
+      <span class="button mini" v-if="canClear" @click="clear">{{clearText}}</span>
+    </div>
+    <div v-if="searchKey" class="flex_row_default searchBox">
+      <input class="onlyselectsearchText" placeholder="按关键字查询" :value="search" @change="changeSearch" type="text"></input>
+      <span class="button mini" @click="refresh">搜索</span>
+    </div>
+    <div class="onlyselectitems">
+      <div v-for="(item,index) in listData.rows" :data-index="index" @click="change" :class="index == index1 ? 'onlyselectitem active' : 'onlyselectitem'" key="index" v-if="!item.hidden">{{item[sitem || skey]}}</div>
+      <liststatus all-loaded-text="" :status="listData.status" @load="load"></liststatus>
+    </div>
+  </drawer>
+</div>
+</div>

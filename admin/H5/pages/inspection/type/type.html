@@ -1,0 +1,29 @@
+<template>
+    <!-- 巡检类型完成率 -->
+    <div>
+        <div class="type-box">
+            <div style="display: flex;justify-content: space-between;align-items: center;padding-top: 10px;">
+                <div style="margin-left: 20px;font-size: 18px;">
+                    巡查类型完成率
+                    <span style="color: #708090;font-size: small">&nbsp;&nbsp;&nbsp;日常巡查需满足步数>20000或发现案件>20，月度巡查及安全巡查每月至少4次，单次区域覆盖率25%以上</span>
+                </div>
+                <div style="display: flex;align-items: center;">
+                    <span>选择时间：</span>
+                    <el-date-picker
+                            v-model="year"
+                            placeholder="选择年月"
+                            type="month"
+                            value-format="yyyy-MM"
+                            :clearable="false"
+                            prefix-icon="prefix-icon-class"
+                            style="width: 120px;margin-right: 20px;"
+                            @change="changeTime"
+                    >
+                    </el-date-picker>
+                </div>
+            </div>
+            <!-- 折线图 -->
+            <div id="type" :style="mytype" class="type-div"></div>
+        </div>
+    </div>
+</template>

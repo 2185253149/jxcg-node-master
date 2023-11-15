@@ -1,0 +1,46 @@
+<template>
+    <!-- 巡检次数完成率 -->
+    <div>
+        <!-- <div class="completion-box">
+            <div style="display: flex;justify-content: space-between;align-items: center;padding-top: 10px;">
+                <div style="margin-left: 20px;font-size: 18px;">巡查次数</div>
+                <div style="display: flex;align-items: center;">
+                    <span>：</span>
+                    <el-date-picker
+                        v-model="year"
+                        type="year"
+                        placeholder="选择年"
+                        prefix-icon="prefix-icon-class"
+                        style="width: 120px;margin-right: 20px;"
+                        >
+                    </el-date-picker>
+                </div>
+            </div>
+            <div id="completion" :style="mycompletion" class="completion-div"></div>
+           </div> -->
+        <div class="completion-box">
+            <div style="display: flex;justify-content: space-between;align-items: center;padding-top: 10px;">
+                <div style="margin-left: 20px;font-size: 18px;">
+                    路段巡查覆盖率
+                    <span style="color: #708090;font-size: small"></span>
+                </div>
+                <div style="display: flex;align-items: center;">
+                    <span>选择时间：</span>
+                    <el-date-picker
+                            v-model="year"
+                            placeholder="选择年月"
+                            type="year"
+                            value-format="yyyy"
+                            prefix-icon="prefix-icon-class"
+                            :clearable="false"
+                            style="width: 120px;margin-right: 20px;"
+                            @change="changeTime"
+                    >
+                    </el-date-picker>
+                </div>
+            </div>
+            <!-- 折线图 -->
+            <div id="completionUnit" :style="mycompletion" class="completion-div"></div>
+        </div>
+    </div>
+</template>

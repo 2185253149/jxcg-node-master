@@ -1,0 +1,39 @@
+<div class="components_Input_Map_HwPoint_map">
+  <div v-if="!disabled">
+    <el-select v-model="unitValue" @change="uChange" filterable placeholder="请选择所属单位">
+      <el-option
+        v-for="item in units"
+        :key="item.id"
+        :label="item.name"
+        :value="item.unitId">
+      </el-option>
+    </el-select>
+    <el-select v-model="typeValue" @change="uChange" filterable placeholder="请选择设施类型">
+      <el-option
+        v-for="item in typeArray"
+        :key="item.value"
+        :label="item.name"
+        :value="item.value">
+      </el-option>
+    </el-select>
+    <el-select
+        v-model="selectValue"
+        filterable
+        style="margin-bottom:16px;"
+        remote
+        @change="fChange"
+        reserve-keyword
+        placeholder="请输入关键词，按资源名称搜索"
+        :remote-method="remoteMethod"
+        :loading="loading">
+        <el-option
+        v-for="item in options"
+        :key="item.id"
+        :label="item.name"
+        :value="item.id">
+        </el-option>
+    </el-select>
+  </div>
+  <div style="margin-bottom:16px;">详细地址：{{address}}</div>
+  <webmappoint :index="index" :name="name" :disabled="disabled" :attr="attr" :value="value" @change="change"></webmappoint>
+</div>

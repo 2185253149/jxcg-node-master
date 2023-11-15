@@ -1,0 +1,17 @@
+<div class="components_Input_Model_index">
+<div :style="style" class="modelIndex">
+    <div v-for="(item,index) in td" key="index">
+        <div class="flex_row_default modelIndexTitle">
+            <div class="modelIndexTitleText">
+                <span v-if="title">{{title + ' ' + (index + 1)}}</span>
+                <span v-else>{{'第' + (index + 1) + '项'}}</span>
+            </div>
+            <div v-if="!disabled">
+                <span class="button mini danger" @click="delet" :data-index="index">删除</span>
+            </div>
+        </div>
+        <formitems :ref="'form' + oid + index" :models="models" :read-only="disabled" :values="td[index]"></formitems>
+    </div>
+    <span class="button mini primary" v-if="!disabled" @click="edit">+ 新增</span>
+</div>
+</div>

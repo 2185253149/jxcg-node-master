@@ -1,0 +1,74 @@
+<template>
+    <master title="汇总统计">
+        <div class="pages">
+            <el-row>
+                <el-col :span="6">
+                    <div class="grid-content">
+                    <rank :currentYear="currentYear"></rank>
+                    </div>
+                </el-col>
+                <el-col :span="18">
+                    <div class="grid-content">
+                        <frequency @getYear="getYear"></frequency>
+                    </div>
+                </el-col>
+                <el-col :span="188">
+                    <div class="grid-content">
+                        <patrol @getYear="getYear"></patrol>
+                    </div>
+                </el-col>
+            </el-row>
+            <completion></completion>
+            <type></type>
+        </div>
+    </master>
+</template>
+
+<script type="text/javascript">
+    (function (G) {
+        G.vue({
+        "usingComponents": {///引入组件
+            "master": "/components/Master/Master",///母版组件
+            "frequency":"/pages/inspection/frequency/frequency",//饼图
+            "patrol":"/pages/inspection/patrol/patrol",//饼图
+            "rank":"/pages/inspection/ranking/ranking",//排行
+            "completion":"/pages/inspection/completion/completion",//巡查次数完成率
+            "type":"/pages/inspection/type/type",//巡查类型完成率
+            
+        },
+        "enablePullDownRefresh": true,
+        },{
+            created(){
+            },
+            mounted(){
+                
+            },
+            data:{
+                try:{},
+                currentYear:''
+            },
+            methods:{
+                getYear(i){
+                console.log('=ssaad',i)
+                this.currentYear = i
+             }
+            },
+        })
+    })(Y)
+</script>
+
+<style scoped>
+.pages{
+    width: 100%;
+    height: 100%;
+    background: #eef2fb;
+}
+.divs {
+    /* margin: 20px; */
+    padding: 20px;
+}
+.grid-content {
+    border-radius: 4px;
+    min-height: 400px;
+}
+</style>

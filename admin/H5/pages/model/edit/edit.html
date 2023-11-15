@@ -1,0 +1,102 @@
+<template>
+<master :show-top="platform == 'Web' || platform == 'iOS' || platform == 'Android'" :title="title">
+  <div class="form">
+    <formitems :models="models" :values="values" :read-only="readOnly" ref="form"></formitems>
+  </div>
+  <div class="btnEmpty"></div>
+  <div class="flex_row_default pageBtns">
+    <span class="button mini editBtn" :style="backStyle" @click="$back">取消</span>
+    <span class="button mini primary editBtn" :style="submitStyle" v-if="!readOnly" @click="submit">{{submiting ? submitingText : submitText}}</span>
+  </div>
+</master>
+</template>
+<script type="text/javascript">
+(function (G) {
+  G.vue({
+  "usingComponents": {
+    "master": "/components/Master/Master",
+    "formitems": "/components/Form/Items/Items"
+  }
+},{
+    data: {
+      oid:'',
+      title: '',
+      models: {},
+      values: {},
+      readOnly:false,
+      submiting:false,
+      submitText:'保存',
+      submitStyle:'',
+      backStyle:'',
+      submitingText:'保存中...',
+      tips:[],
+      platform: G.platform
+    },
+    mounted: function (options) {
+      var oid = options.oid || G.zIndex();
+      var _this = this;
+      var query = G.Storage.get('modeleditquery');
+      if (!query) {
+        G.reEnter('/pages/index/index');
+        return false;
+      }
+      G.setNavigationBarTitle({
+        title: query.title || '编辑'
+      })
+      var models = G.clone(query.models),value = G.clone(query.values);
+      if (models.createTime) models.createTime = undefined;
+      if (models.updateTime) models.updateTime = undefined;
+      this.setData({ backStyle:query.backStyle, submitStyle:query.submitStyle, submitText:query.submitText || '保存', submitingText:query.submitingText || '保存中...',title: query.title || '编辑', readOnly: query.readOnly, oid: oid,tips:query.tips || [] });
+      query.values = G.clone(query.values);
+      this.selectComponent('#form').init(models, value, query.readOnly,query.tips || []);
+      G.Storage.set(oid, query);
+    },
+    methods: {
+      submit: function (type) {
+        var _this = this;
+        var query = G.Storage.get(this.getData('oid'));
+        if(this.getData('submiting') || this.getData('readOnly')) return false;
+        var data = this.selectComponent('#form').submit();
+        if (query.submit && data) data = query.submit.call(this,data,query);
+        if (data && query.url) {
+          data = G.merge(query.values,data);
+          this.setData({ submiting: true });
+          G.ajax(query.url, function (ret) {
+            _this.setData({ submiting: false });
+            if(ret.errorMsg) {
+              G.alertx(ret.errorMsg);
+              return false;
+            }
+            if(query.meth == 'POST') {
+              //if(ret._id) data._id = ret._id;
+              if(ret.id) data.id = ret.id;
+            }
+            query.refresh(function(){},data);
+            G.Storage.remove('modeleditquery');
+            _this.$back();
+          }, {
+              data: data,
+              meth: query.meth || 'POST'
+            })
+        }
+      }
+    }
+  });
+})(Y)
+
+</script>
+<style scoped>
+.btnEmpty{
+  height: 106rpx;
+}
+.Web .btnEmpty{
+  height: 8px;
+}
+.Web .form{
+  min-height: 300px;
+}
+.tips{
+	margin:32rpx;
+	color:#ff0000;
+}
+</style>

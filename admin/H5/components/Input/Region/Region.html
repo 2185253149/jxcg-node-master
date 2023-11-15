@@ -1,0 +1,14 @@
+<div class="components_Input_Region_Region">
+<div class="region">
+  <picker :disabled="disabled" v-if="platform == 'WeChatMiniApp' || platform == 'AlipayMiniApp'" mode="region" @change="_change" :value="region" :custom-item="customItem">
+    <div class="regionView">
+      {{region[0]}}{{region[1]}}{{region[2]}}{{region[3]}}
+    </div>
+  </picker>
+  <div v-else>
+    <div class="regionView" @click="openPicker">
+      {{region[0]}}{{region[1]}}{{region[2]}}{{region[3]}}
+    </div>
+  </div>
+</div>
+</div>

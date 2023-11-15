@@ -1,0 +1,44 @@
+<template>
+<div class="errBox">
+  <img class="errorImg" :src="img"></img>
+  <span class="errorMsg">{{msg}}</span>
+</div>
+</template>
+<script type="text/javascript">
+(function (G) {
+  G.vue({},{
+    noLogin: true,
+    data:{
+      msg:'',
+      img:/iOS|Android|Web/.test(G.platform) ? './images/error.png' : '/images/error.png'
+    },
+    mounted: function (options) {
+      this.setData({ msg: options.msg || '加载失败，请稍后再试'});
+    }
+  });
+})(Y)
+
+</script>
+<style scoped>
+.errBox{
+  height: 100%;
+  min-height: 900rpx;
+  background: #f5f5f5;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.errorImg{
+  width: 266rpx;
+  height: 369rpx;
+  margin-left:-80rpx;
+}
+.errorMsg{
+  margin-top:32rpx;
+  line-height: 150%;
+  color: #666;
+}
+</style>

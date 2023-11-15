@@ -1,0 +1,115 @@
+<template>
+  <master :title="title">
+    <listpage ref="listpage"></listpage>
+    <modal :confirm-box-style="contentStyle" title="新增内容" :visible="show">
+      这是一个自定义内容弹出框
+    </modal>
+  </master>
+</template>
+<script type="text/javascript">
+(function (G) {
+var _this = null;
+G.vue({
+  "usingComponents": {///引入组件
+    "master": "/components/Master/Master",///母版组件
+    "listpage": "/components/List/Page/Page",///通用列表组件
+    "modal":"/components/Modal/Modal"
+  },
+  "enablePullDownRefresh": true
+},G.modelList({///配置listpage组件
+  	modelName:'standard',///entity名称
+    title:'计分标准',
+    listPage(list,query){///query为前一个页面传过来的参数
+      let type = query.type
+      list.getUrl = '/api/model/standard';///列表请求API
+      if(query.type) list.getUrl += '&type=' + query.type
+      // list.searchKey = 'title,createTime,createTimeEND'///搜索字段，来源于列表数据模型
+      // list.models.createTime = {
+      //   label:'发布时间',
+      //   unList:true,
+      //   type:'datetime'
+      // }
+      // list.models.updateTime = {
+      //   label:'结束时间',
+      //   unList:true,
+      //   type:'datetime'
+      // }
+      ///list.canCheck = false ///取消选中按钮 同时取消批量删除
+      ///list.canBack = true ///添加返回上一页按钮
+      ///list.actions.add = false ///取消新增按钮
+      ///list.actions.delet = undefined ///取消行删除按钮
+      ///list.actions.edit = undefined ///取消行修改按钮
+      // list.models = {/// 列表数据模型，默认使用后台返回对应的模型
+      //   id:{
+      //     label:'编号'
+      //   }
+      // }
+      // list.addDataChange = function(item,i){///数据监听回掉
+      //   if(item.isNew) {
+      //     item.dis_push = true///此行去掉推送按钮
+      //   }
+      // }
+      list.actions.detail = {///定义操作按钮，默认存在修改和删除
+        name:'预览',///按钮名称
+        action(event){///点击回调
+          let item = event.detail///数据
+          //G.$go('/pages/article/news/detail?id=' + item.id)
+          window.open('/news/' + item.id,'newW',"height=500, width=375, top=100, left=100, toolbar=no, menubar=no,resizable=no, location=no, status=no")
+        }
+      }
+      list.actions.push = {///定义操作按钮，默认存在修改和删除
+        name:'推送',///按钮名称
+        action(event){///点击回调
+          G.confirm('是否推送给用户?').then(()=>{
+            let item = event.detail///数据
+            G.post('/v1/wecom/send_msg',{
+              "news" : {
+                    "articles" : [
+                        {
+                          "title" : item.title,
+                          "description" : item.digest,
+                          "url" : G.Storage.get('APIURL') + '/news/' + item.id,
+                          "picurl" : G.Storage.get('APIURL') + item.img
+                        }
+                            ]
+                }
+            }).then(res => {
+              if(!res.errorMsg){
+                G.toask('推送成功')
+              }
+            })
+          })
+        }
+      }
+    },
+    modeleditquery(edit,event,query){///编辑页面 edit对象，event事件，query前一个页面传过来的参数
+      // if(query.type){
+      //   edit.values.type = query.type
+      //   edit.models.type.type = ''
+      // }
+      // edit.models.createTime.type = ''
+      // edit.models.createTimeEND.type = ''
+      // edit.models = {///编辑数据模型，默认使用后台返回的对应模型
+      //   title:{
+      //     label:'标题',
+      //     type:'input'
+      //   }
+      // }
+      ///edit.readOnly = true ///设置页面只读
+      ///edit.meth = 'PUT' ///请求方式
+      ///edit.url = '/api/model/article' ///请求地址
+    }
+  },{
+    data:{
+      contentStyle:'',
+      show:false
+    },
+    mounted:function(query){
+      _this = this
+    }
+  }));
+})(Y)
+</script>
+<style scoped>
+  
+</style>

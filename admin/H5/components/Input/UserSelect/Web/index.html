@@ -1,0 +1,52 @@
+<div class="components_Input_UserSelect_Web_index">
+    <div v-if="attr.hidden !== true" class="userSelectorInput" @click="open()">{{showValue}}</div>
+    <el-dialog
+        title="选择用户"
+        :modal="attr.modal || true"
+        :visible.sync="dialogVisible"
+        width="80%">
+        <el-tabs v-model="activeName" @tab-click="getList">
+            <el-tab-pane label="按单位选择" name="unit">
+                <div style="display: flex;">
+                    <el-select filterable v-model="unitValue" @change="getList" placeholder="请选择单位">
+                        <el-option
+                          v-for="item in units"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <el-input style="margin-left: 16px;" v-model="nameValue" @change="searchName" placeholder="按姓名搜索"></el-input>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane label="按分组选择" name="group">
+                <div style="display: flex;">
+                    <el-select filterable v-model="groupValue" @change="getList" placeholder="请选择群组">
+                        <el-option
+                          v-for="item in groups"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <el-input style="margin-left: 16px;" v-model="nameValue" @change="searchName" placeholder="按姓名搜索"></el-input>
+                </div>
+            </el-tab-pane>
+        </el-tabs>
+        <div style="margin:16px 0px;max-height: 300px; overflow: auto;">
+            <div v-if="!tableData.length" style="text-align: center; line-height:80px;">暂无用户</div>
+            <el-checkbox-group v-if="max!=1" v-model="multipleSelection">
+                <el-checkbox style="margin:8px;width: 100px;" v-for="user in tableData" :label="user.value">{{user.name}}</el-checkbox>
+            </el-checkbox-group>
+            <el-radio-group v-else v-model="multipleSelection">
+                <el-radio style="margin:8px;width: 100px;" v-for="user in tableData" :label="user.value">{{user.name}}</el-radio>
+            </el-radio-group>
+        </div>
+        <div style="margin-top:16px;" class="flex_row_default">
+            <div style="flex:1;"></div>
+            <div v-if="max!=1" style="text-align: right; margin-right: 16px;">{{showValue}}</div>
+            <el-button round @click="dialogVisible=false">取消</el-button>
+            <el-button type="primary" round @click="change">确定</el-button>
+        </div>
+    </el-dialog>
+</div>

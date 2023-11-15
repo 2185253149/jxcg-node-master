@@ -1,0 +1,134 @@
+<template>
+  <div class="loginBox">
+    <div v-if="logo" class="logo"><img class="logoImg" mode="aspectFit" :src="logo"></img></div>
+    <formitems :models="models" ref="loginForm"></formitems>
+    <button_ class="loginBtn" type="primary" size="default" :disabled="submiting" @click="submit">{{submiting ? '登录中...'
+      : '登录'}}</button_>
+  </div>
+</template>
+<script type="text/javascript">
+  (function (G) {
+    G.vue({
+      "usingComponents": {
+        "formitems": "/components/Form/Items/Items"
+      },
+      "navigationBarTitleText": "登录"
+    }, {
+      noLogin: true,
+      data: {
+        logo: G.Storage.get('logo'),
+        models: {
+          userName: {
+            type: 'input',
+            label: '用户名',
+            rule: { NotNull: true }
+          },
+          passWord: {
+            label: '密码',
+            type: 'input',
+            attr: { type: 'password' },
+            rule: { NotNull: true }
+          }
+        },
+        submiting: false
+      },
+      methods: {
+        submit: function () {
+          var _this = this;
+          var data = this.selectComponent('#loginForm').submit();
+          if (!data) return false;
+          data.passWord = G.MD5(data.passWord);
+          data.platform = G.platform;
+          console.log('data:', data);
+          this.setData({ submiting: true });
+          // G.ajax('/login',function(ret){
+          //   _this.setData({ submiting: false });
+          //   if(!ret.errorMsg){
+          //     console.log('ret',ret);
+          //     G.Storage.set('user', ret, 1);
+          //     var activeGroupId = G.Storage.get('groupId', 1);
+          //     G.Storage.remove('groupId');
+          //     var hasActive = false;
+          //     for (var i = 0; i < ret.groups.length; i++) {
+          //       if (activeGroupId == ret.groups[i].groupId) {
+          //         hasActive = true;
+          //       }
+          //     }
+          //     if (!hasActive && ret.groups[0]) activeGroupId = ret.groups[0].groupId;
+          //     G.Storage.set('groupId', activeGroupId, 1);
+          //     G.Storage.get('autoLogin')(function () {
+          //       G.$go(G.Storage.get('loginRedirectTo') || '/pages/index/index', 'redirectTo')
+          //     })
+          //   }
+          // },{
+          //   meth:'POST',
+          //     data: data
+          // })
+          G.ajax('{JAVAURL}/user/login', function (ret) {
+            _this.setData({ submiting: false });
+            if (!ret.errorMsg) {
+              console.log('ret', ret);
+              G.Storage.set('user', ret.data, 1);
+              console.log('1');
+              var activeGroupId = G.Storage.get('groupId', 1);
+              console.log('2');
+              G.Storage.remove('groupId');
+              var hasActive = false;
+              console.log('3', ret);
+              for (var i = 0; i < ret.data.groups.length; i++) {
+                console.log('7');
+                if (activeGroupId == ret.data.groups[i].groupId) {
+                  console.log('8');
+                  hasActive = true;
+                }
+              }
+              console.log('4');
+              if (!hasActive && ret.data.groups[0]) activeGroupId = ret.data.groups[0].groupId;
+              console.log('5',activeGroupId);
+              G.Storage.set('groupId', activeGroupId, 1);
+              console.log('6');
+              console.log('9');
+              G.Storage.get('autoLogin')(function () {
+                G.$go(G.Storage.get('loginRedirectTo') || '/pages/index/index', 'redirectTo')
+              })
+            }
+          }, {
+            meth: 'POST',
+            data: data
+          })
+        }
+      }
+    });
+  })(Y)
+
+</script>
+<style scoped>
+  .loginBox {
+    padding-top: 80rpx;
+  }
+
+  .Web .loginBox {
+    width: 300px;
+    border: 1px solid #e4e4e4;
+    margin: 0px auto;
+    margin-top: 80px;
+    padding-top: 0px;
+    padding-bottom: 48px;
+  }
+
+  .logo {
+    text-align: center;
+  }
+
+  .logoImg {
+    max-width: 100%;
+  }
+
+  .loginBtn {
+    margin: 0rpx 32rpx;
+  }
+
+  .Web .loginBtn {
+    margin: 0px 32px;
+  }
+</style>

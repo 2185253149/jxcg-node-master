@@ -1,0 +1,6 @@
+<div class="components_Drawer_Drawer">
+<div v-if="visible" class="drawer">
+	<div class="drawerCover" @touchmove.stop="true" :style="coverStyle" @click="_close"></div>
+	<div class="drawerContent" @touchmove="true" :style="contentStyle"><slot></slot></div>
+</div>
+</div>

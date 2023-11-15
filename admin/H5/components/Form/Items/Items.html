@@ -1,0 +1,30 @@
+<div class="components_Form_Items_Items">
+<div class="formItems">
+	<div v-for="(item,index) in formitems" key="id" :class="item.type != 'switch' ? 'formDiv' : 'formDiv formSwitch'" :style="platform == 'Web' ? item.style : ''">
+		<div class="formLabel">
+			<span v-if="item.type == 'title'" class="labelTitle">{{item.label}}</span>
+			<span v-else>{{item.label}}</span>
+			<span v-if="!_readOnly && item.rule && item.rule.NotNull" :style="computStyle('color:#ff0000;')">*</span>
+		</div>
+		<div v-if="item.type == 'title'" class="formTitle"></div>
+		<div v-else class="formInput">
+			<anyselect :show-value="item.attr.showValue" v-if="item.type == 'anyselect'" :skey="item.attr.skey" :sitem="item.attr.sitem" :index="index" :name="item.id" :disabled="_readOnly||item.readOnly" :url="item.attr.url" :meth="item.attr.meth" :title="item.attr.title" :data="item.attr.data" :placeholder="item.attr.placeholder" :search-key="item.attr.searchKey" :search-regex="item.attr.searchRegex" :can-clear="item.attr.canClear" :vkey="item.attr.vkey" :value="valueShow[0][item.id]" @change="change"></anyselect>
+			<inputeditor v-else-if="item.type == 'editor'" :index="index" :name="item.id" :disabled="_readOnly||item.readOnly" :value="valueShow[0][item.id]" :placeholder="item.attr && item.attr.placeholder" :attr="item.attr" @change="change"></inputeditor>
+			<inputform :ref="item.id" v-else-if="item.type == 'form'" :index="index" :name="item.id" :hide-head="item.attr.hideHead" :title="item.attr.title" :disabled="_readOnly||item.readOnly" :models="item.attr.models" :value="valueShow[0][item.id]" @change="change"></inputform>
+			<inputtable v-else-if="item.type == 'table'" :index="index" :name="item.id" :hide-head="item.attr.hideHead" :disabled="_readOnly||item.readOnly" :models="item.attr.models" :value="valueShow[0][item.id]" @change="change"></inputtable>
+			<webmappoint v-else-if="item.type == 'mappoint' && platform == 'Web'" :index="index" :name="item.id" :disabled="_readOnly||item.readOnly" :attr="item.attr" :value="valueShow[0][item.id]" @change="change"></webmappoint>
+			<mappoint v-else-if="item.type == 'mappoint' && platform != 'Web'" :index="index" :name="item.id" :disabled="_readOnly||item.readOnly" :attr="item.attr" :value="valueShow[0][item.id]" @change="change"></mappoint>
+            <webmappolygon v-else-if="item.type == 'mappolygon' && platform == 'Web'" :index="index" :name="item.id" :disabled="_readOnly||item.readOnly" :attr="item.attr" :value="valueShow[0][item.id]" @change="change"></webmappolygon>
+			<mappolygon v-else-if="item.type == 'mappolygon' && platform != 'Web'" :index="index" :name="item.id" :disabled="_readOnly||item.readOnly" :attr="item.attr" :value="valueShow[0][item.id]" @change="change"></mappolygon>
+            <webcustomer v-else-if="item.type == 'customer' && platform == 'Web'" :index="index" :name="item.id" :disabled="_readOnly||item.readOnly" :attr="item.attr" :value="valueShow[0][item.id]" :item="valueShow[0]" @change="change"></webcustomer>
+			<wxcustomer v-else-if="item.type == 'customer' && platform != 'Web'" :index="index" :name="item.id" :disabled="_readOnly||item.readOnly" :attr="item.attr" :value="valueShow[0][item.id]" :item="valueShow[0]" @change="change"></wxcustomer>			
+			<mixinput v-else :ref="item.id" :name="item.id" :type="item.type" :attr="item.attr" :read-only="_readOnly||item.readOnly" :value="valueShow[0][item.id]" @change="change" :index="index"></mixinput>
+		</div>
+        <div v-if="item.errorMsg" class="formErr"><span>{{item.errorMsg}}</span></div>
+	</div>
+  <div class="clear"></div>
+  <div v-if="tips_.length" class="tips">
+  	<div v-for="(item,index) in tips_" class="tip" key="index" :style="item.style">{{item.name}}</div>
+  </div>
+</div>
+</div>

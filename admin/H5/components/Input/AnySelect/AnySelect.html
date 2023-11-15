@@ -1,0 +1,23 @@
+<div class="components_Input_AnySelect_AnySelect">
+<div>
+  <div class="anyselectshowText" @click="tapOpen">
+    <div v-if="showValue">{{values || placeholder || ''}}</div>
+    <slot></slot>
+  </div>
+  <drawer :content-style="contentStyle" :visible="show" @close="close">
+    <div class="onlyselectsearch flex_row_default">
+      <span class="onlyselectsearchTitle">{{title}}</span>
+      <span class="button mini" v-if="canClear" @click="clear">清空</span>
+      <span class="button mini primary" @click="submit">确定</span>
+    </div>
+    <div v-if="searchKey" class="searchBox flex_row_default">
+      <input class="onlyselectsearchText" placeholder="按关键字查询" :value="search" @change="changeSearch" type="text"></input>
+      <span class="button mini" @click="refresh">搜索</span>
+    </div>
+    <div class="onlyselectitems">
+      <div v-for="(item,index) in listData.rows" :data-index="index" @click="checkn" :class="item.disClick ? 'onlyselectitem disClick' : (item.checked ? 'onlyselectitem active' : 'onlyselectitem')" key="index" v-if="!item.hidden">{{item[sitem || skey]}}</div>
+      <liststatus all-loaded-text="" :status="listData.status" @load="load"></liststatus>
+    </div>
+  </drawer>
+</div>
+</div>

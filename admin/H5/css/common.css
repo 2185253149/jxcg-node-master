@@ -1,0 +1,117 @@
+.page{
+  height: 100%;
+  font-size:28px;
+  background: #f4f4f4;
+  line-height:1;
+}
+.Web .page{
+  font-size:14px;
+}
+.container{
+  min-height: 100%;
+  background: #ffffff;
+}
+.flex_row_default{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.flext_column_default{
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+}
+.text_overflow{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+.clear{
+  clear: both;
+}
+.btn4b83d6{
+  background: #4b83d6;
+  color: #fff;
+  transition: all 0.2s;
+}
+.btn4b83d6:active{
+  background: #98baf4;
+}
+.button{
+    cursor: pointer;
+    display: block;
+    padding:32px 0px;
+    border-radius: 8px;
+    background: #fff;
+    border:1px solid #dcdfe6;
+    margin-left:8px;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -o-user-select:none;
+    user-select:none;
+    text-align: center;
+    break-inside: avoid;
+    display: inline-block;
+}
+.Web .button{
+    padding:8px 18px;
+    border-radius: 3px;
+    line-height: 120%;
+}
+.button:hover{
+    opacity: 0.8;
+}
+.button.mini{
+    padding:3px 8px;
+    border-radius: 3px;
+}
+.button.primary{
+    background: #409eff;
+    border-color:#409eff;
+    color: #fff;
+}
+.button.warning{
+    background: #e6a23c;
+    border-color:#e6a23c;
+    color: #fff;
+}
+.button.danger,.button.warn{
+    background: #f56c6c;
+    border-color:#f56c6c;
+    color: #fff;
+}
+.button.disabled{
+    cursor:not-allowed;
+    opacity: 0.5;
+}
+.pageBtns{
+  position: fixed;
+  left: 0px;
+  bottom:0px;
+  right:0px;
+  z-index: 1000;
+}
+.pageBtnsEmpty{
+  height:192px;
+}
+.Web .pageBtns{
+  position:inherit;
+  justify-content:flex-start;
+  margin: 32px;
+}
+.pageBtns .editBtn{
+  flex:1;
+  line-height: 96px;
+  border-top:1px solid #ccc;
+  margin-left:0px;
+}
+.Web .pageBtns .editBtn{
+  flex:inherit;
+  line-height: inherit;
+  padding:8px 16px;
+  margin-right:16px;
+}

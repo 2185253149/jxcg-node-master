@@ -1,0 +1,55 @@
+<div class="components_List_Page_Page">
+<div>
+  <listtable v-if="platform == 'Web'" ref="listtable"></listtable>
+  <div v-else class="listPageContent">
+    <div class="searchFormButtonsTitle" v-if="textstitle" :style="textstitleStyle">{{textstitle}}</div>
+    <div v-if="canBack || canAdd || canCheck || canDelete || exportUrl || searchs.length">
+      <div v-if="editing" class="searchFormButtons">
+        <div class="tableCheckBox"><inputcheckbox v-if="canCheck" @change="check" index="-1" :items="false" type="radio" :checked="listData.allChecked"></inputcheckbox></div>
+        <span class="searchFormButton" v-if="canBack" @click="$back">{{textsbackBtn}}</span>
+        <span class="searchFormButton" v-if="canAdd" @click="add">{{textsaddBtn}}</span>
+        <span class="searchFormButton" v-if="canDelete && canCheck && listData.rows.length" @click="delet">{{textsdeletsBtn}}</span>
+        <span class="searchFormButton" v-if="exportUrl" @click="exportExcel">{{textsexportBtn}}</span>
+        <span class="searchFormButton" v-if="searchs.length" @click="openSearch">{{textssearchBtn}}</span>
+        <slot name="btns"></slot>
+        <span class="searchFormButton" @click="changeEditing">收起</span>
+      </div>
+      <span v-else class="noedit" @click="changeEditing">操作</span>
+    </div>
+    <drawer :content-style="drawerStyle" :visible="show" @close="openSearch">
+      <div v-for="(item,index) in searchs" key="index" class="search">
+        <mixinput :name="item.id" :type="item.type" :attr="item.attr" @change="change" :index="index" :value="searchValuesShow[item.id]"></mixinput>
+      </div>
+      <div class="searchBtns">
+        <span v-if="platform == 'WeChatMiniApp' || platform == 'AlipayMiniApp'" class="searchBtn searchClear" @click="clearSearch">清空</span>
+        <span class="searchBtn" @click="refresh">确定</span>
+      </div>
+    </drawer>
+    <div class="tablesTop" v-if="listData.total">
+      <div class="tablesTotal">
+        <span>共{{listData.total}}条数据</span>
+        <span v-if="listData.rows.length == listData.total">,当前显示{{listData.rows.length}}条</span>
+      </div>
+    </div>
+    <div class="tablesEmpty"></div>
+    <div class="tablestatistics" v-if="statisticsString">{{statisticsString}}</div>
+    <div v-for="(item,index) in listData.rows" key="index" class="tr">
+      <div class="tds">
+        <div v-for="(model,key) in models" key="key" :class="model.index > 2 && item.tdhide ? 'td hide' : 'td'" v-if="model.label && !model.unList">
+          <span class="th">{{model.label}}</span>
+          <img v-if="model.type == 'image'" :src="item[key + '_']" class="timage" :data-index="index" :data-key="key" @click="openImg"></img>
+          <span class="tvalue" v-else>{{item[key + '_']}}</span>
+        </div>
+        <div class="trBottom">
+          <div class="tableCheckBox" v-if="canCheck"><inputcheckbox type="radio" :items="false" @change="check" :index="index" :checked="item.checked"></inputcheckbox></div>
+          <div v-if="modelLength > 3 && item.tdhide" @click="changeHide" :data-index="index" class="listMore">+ 展开</div>
+          <div :style="computStyle('flex:1;')"></div>
+          <span @click="doAction" v-if="!listData.rows[index]['dis_' + act.action]" :data-index="index" :data-action="act.action" v-for="(act,actindex) in actions" :style="act.style" class="action" key="index">{{act.name}}</span>
+        </div>
+      </div>
+    </div>
+    <liststatus :count="listData.rows.length" :status="listData.status" @load="load"></liststatus>
+  </div>
+  <div v-if="editing && (canBack || canAdd || canCheck || canDelete || exportUrl || searchs.length)" class="listRowsEmpty"></div>
+</div>
+</div>

@@ -1,0 +1,43 @@
+/* scoped */
+.table{
+  width: 95%;
+  overflow: hidden;
+  border-right:1rpx solid #e4e4e4;
+  border-bottom:1rpx solid #e4e4e4;
+}
+.tr{
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+}
+.th{
+  flex: 1;
+  border-left:1rpx solid #e4e4e4;
+  border-top:1rpx solid #e4e4e4;
+  padding:16rpx;
+  font-weight: bold;
+}
+.td{
+  flex: 1;
+  border-left:1rpx solid #e4e4e4;
+  border-top:1rpx solid #e4e4e4;
+  padding:16rpx;
+}
+.tvalue{
+  flex: 1;
+  word-wrap:break-word;
+}
+.timage{
+  width: 150rpx;
+  height: 150rpx;
+  cursor: pointer;
+  overflow: hidden;
+}
+.tableLabel{
+  margin:8rpx auto;
+}
+.err{
+  margin-top:8rpx;
+  color:#ff0000;
+}

@@ -1,0 +1,14 @@
+.frequency-box{
+    height: 410px;
+    background-color: #fff;
+    margin: 20px;
+    border-radius: 20px;
+}
+.no-data-text {
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+    color: #999;
+    padding: 10px;
+    margin-top: 170px;
+}

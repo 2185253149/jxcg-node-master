@@ -1,0 +1,9 @@
+<div class="components_Input_Checkbox_Checkbox">
+<div @click="change" class="checkbox1">
+  <div :style="styleBox" class="checkboxIcon">
+    <icon :type="type == 'checkbox' ? 'success_no_circle' : 'success'"  v-if="isChecked" :color="color" :size="size"></icon>
+  </div>
+  <div class="checkboxLabel" :style="computStyle('float:left;')"><slot></slot></div>
+  <div :style="computStyle('clear:both;')"></div>
+</div>
+</div>

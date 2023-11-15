@@ -1,0 +1,9 @@
+.type-box{
+    height: 420px;
+    background-color: #fff;
+    margin:0px 20px 20px 20px;
+    border-radius: 20px;
+}
+.type-div{
+    margin: 0 auto;
+}

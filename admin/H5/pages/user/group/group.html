@@ -1,0 +1,79 @@
+<template>
+<master :title="title">
+  <div v-for="(item,index) in rows" key="index" class="list" :data-id="item.id" @click="change">
+    <inputcheckbox :checked="values[item.id]">
+      <span class="itemName">{{item.name}}</span>
+    </inputcheckbox>
+  </div>
+  <div class="flex_row_default pageBtns">
+    <span class="button mini editBtn" @click="$back">返回</span>
+  </div>
+</master>
+</template>
+<script type="text/javascript">
+(function (G) {
+  G.vue({
+  "usingComponents": {
+    "inputcheckbox":"/components/Input/Checkbox/Checkbox"
+  }
+},{
+    data: {
+      title: '',
+      values:{},
+      rows:[],
+      userId:''
+    },
+    methods: {
+      change:function(event){
+        var _this = this;
+        var id = event.currentTarget.dataset.id, values = this.getData('values'), meth = 'DELETE', data = { groupId: id, userId: this.getData('userId')};
+        if (!values[id]){
+          meth = 'POST';
+        }else{
+          data.sql = { real: true };
+        }
+        G.ajax('/api/model/group_user', function (ret) {
+          if (!ret.errorMsg) {
+            values[id] = !values[id];
+            _this.setData({values:values});
+          }
+        }, {
+            meth: meth,
+            data: data
+          })
+      }
+    },
+    mounted: function (query) {
+      var _this = this;
+      G.ajax('/api/model/group', function (ret) {
+        var values = {};
+        for (var i = 0; i < ret.length; i++) {
+          values[ret[i].id] = false;
+        }
+        G.ajax('/api/model/group_user', function (_ret) {
+          if (!ret.errorMsg) {
+            for (var i = 0; i < _ret.length; i++) {
+              values[_ret[i].groupId] = true;
+            }
+            var groupNickName = G.Storage.get('nickNames').group || '权限';
+            _this.setData({ rows: ret, values: values, userId: query.userId, title: query.name + ' ' + groupNickName });
+            G.setNavigationBarTitle({
+              title: query.name + ' ' + groupNickName
+            })
+          }
+        }, {
+            data: {
+              userId: query.userId,
+              sql: 'userGroup_group_user'
+            }
+          })
+      })
+    }
+  });
+})(Y)
+</script>
+<style scoped>
+.list{
+  margin:32rpx;
+}
+</style>

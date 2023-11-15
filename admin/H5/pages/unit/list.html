@@ -1,0 +1,409 @@
+<template>
+<master :title="title">
+  <div class="addFirst addDiv"></div>
+  <div v-for="(item,index) in tree" key="id" class="list">
+    <div class="itemDiv">
+      <div v-if="item.children.length" class="arrow" :data-index="index" @click="change">
+        <img class="arrowImg" v-if="item.opened" src="/images/arrow_grey_down.png"></img>
+        <img class="arrowImg" v-else src="/images/arrow_grey_right.png"></img>
+      </div>
+      <span v-else class="arrowHide"></span>
+      <span class="itemName">{{item.name}}</span>
+      <span class="btn" :data-index="index" @click="edit">编辑</span>
+      <span class="btn other" :data-index="index" @click="users">{{userNickName}}</span>
+      <!-- <span class="btn other" :data-index="index" @click="enterprises">关联企业</span> -->
+    </div>
+    <div v-if="item.opened" class="listChild">
+      <div v-if="item.children.length" key="id" v-for="(item1,index1) in item.children">
+        <div class="itemDiv">
+          <div v-if="item1.children.length" class="arrow" :data-index="index + ',' + index1" @click="change">
+            <img class="arrowImg" v-if="item1.opened" src="/images/arrow_grey_down.png"></img>
+            <img class="arrowImg" v-else src="/images/arrow_grey_right.png"></img>
+          </div>
+          <span v-else class="arrowHide"></span>
+          <span class="itemName">{{item1.name}}</span>
+          <span class="btn" :data-index="index + ',' + index1" @click="edit">编辑</span>
+          <span class="btn other" :data-index="index + ',' + index1" @click="users">{{userNickName}}</span>
+          <!-- <span class="btn other" :data-index="index + ',' + index1" @click="enterprises">关联企业</span> -->
+          <span v-if="!item1.children.length" class="btn delet" :data-index="index + ',' + index1" @click="delet">删除</span>
+        </div>
+        <div v-if="item1.opened" class="listChild">
+          <div v-for="(item2,index2) in item1.children" key="id">
+            <div class="itemDiv">
+              <div v-if="item2.children.length" class="arrow" :data-index="index + ',' + index1 + ',' + index2" @click="change">
+                <img class="arrowImg" v-if="item2.opened" src="/images/arrow_grey_down.png"></img>
+                <img class="arrowImg" v-else src="/images/arrow_grey_right.png"></img>
+              </div>
+              <span v-else class="arrowHide"></span>
+              <span class="itemName">{{item2.name}}</span>
+              <span class="btn" :data-index="index + ',' + index1 + ',' + index2" @click="edit">编辑</span>
+              <span class="btn other" :data-index="index + ',' + index1 + ',' + index2" @click="users">{{userNickName}}</span>
+              <!-- <span class="btn other" :data-index="index + ',' + index1 + ',' + index2" @click="enterprises">关联企业</span> -->
+              <span v-if="!item2.children.length" class="btn delet" :data-index="index + ',' + index1 + ',' + index2" @click="delet">删除</span>
+            </div>
+            <div v-if="item2.opened" class="listChild">
+              <div v-for="(item3,index3) in item2.children" key="id">
+                <div class="itemDiv">
+                  <div v-if="item3.children.length" class="arrow" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3" @click="change">
+                    <img class="arrowImg" v-if="item3.opened" src="/images/arrow_grey_down.png"></img>
+                    <img class="arrowImg" v-else src="/images/arrow_grey_right.png"></img>
+                  </div>
+                  <span v-else class="arrowHide"></span>
+                  <span class="itemName">{{item3.name}}</span>
+                  <span class="btn" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3" @click="edit">编辑</span>
+                  <span class="btn other" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3" @click="users">{{userNickName}}</span>
+                  <!-- <span class="btn other" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3" @click="enterprises">关联企业</span> -->
+                  <span v-if="!item3.children.length" class="btn delet" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3" @click="delet">删除</span>
+                </div>
+                <div v-if="item3.opened" class="listChild">
+                  <div v-for="(item4,index4) in item3.children" key="id">
+                    <div class="itemDiv">
+                      <div v-if="item4.children.length" class="arrow" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3 + ',' + index4" @click="change">
+                        <img class="arrowImg" v-if="item4.opened" src="/images/arrow_grey_down.png"></img>
+                        <img class="arrowImg" v-else src="/images/arrow_grey_right.png"></img>
+                      </div>
+                      <span v-else class="arrowHide"></span>
+                      <span class="itemName">{{item4.name}}</span>
+                      <span class="btn" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3 + ',' + index4" @click="edit">编辑</span>
+                      <span class="btn other" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3 + ',' + index4" @click="users">{{userNickName}}</span>
+                      <!-- <span class="btn other" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3 + ',' + index4" @click="enterprises">关联企业</span> -->
+                      <span v-if="!item4.children.length" class="btn delet" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3 + ',' + index4" @click="delet">删除</span>
+                    </div>
+                    <div v-if="item4.opened" class="listChild">
+                      <div v-for="(item5,index5) in item4.children" key="id">
+                        <div class="itemDiv">
+                          <span class="arrowHide"></span>
+                          <span class="itemName">{{item5.name}}</span>
+                          <span class="btn" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3 + ',' + index4 + ',' + index5" @click="edit">编辑</span>
+                          <span class="btn other" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3 + ',' + index4 + ',' + index5" @click="users">{{userNickName}}</span>
+                          <!-- <span class="btn other" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3 + ',' + index4 + ',' + index5" @click="enterprises">关联企业</span> -->
+                          <span class="btn delet" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3 + ',' + index4 + ',' + index5" @click="delet">删除</span>
+                        </div>
+                      </div>
+                      <div class="addDiv">
+                        <span class="arrowHide"></span>
+                        <span class="btn add" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3 + ',' + index4" @click="add">+ {{item4.name}}子{{nickName}}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="addDiv">
+                    <span class="arrowHide"></span>
+                    <span class="btn add" :data-index="index + ',' + index1 + ',' + index2 + ',' + index3" @click="add">+ {{item3.name}}子{{nickName}}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="addDiv">
+                <span class="arrowHide"></span>
+                <span class="btn add" :data-index="index + ',' + index1 + ',' + index2" @click="add">+ {{item2.name}}子{{nickName}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="addDiv">
+            <span class="arrowHide"></span>
+            <span class="btn add" :data-index="index + ',' + index1" @click="add">+ {{item1.name}}子{{nickName}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="addDiv">
+        <span class="arrowHide"></span>
+        <span class="btn add" :data-index="index" @click="add">+ {{item.name}}子{{nickName}}</span>
+      </div>
+    </div>
+  </div>
+
+  <el-dialog
+    title="选择网格关联企业"
+    :visible.sync="enterpriseVisible"
+    width="70%">
+    <el-checkbox-group v-model="enterprise">
+      <el-checkbox style="width: 50%;margin:16px 0px;" @change="changeEnterprise(item.id)" v-for="item in enterpriseItems" key="id" :label="item.id">{{item.name}}</el-checkbox>
+    </el-checkbox-group>
+  </el-dialog>
+</master>
+</template>
+<script type="text/javascript">
+(function (G) {
+  var models = {}, api = '/api/model/unit';
+  G.vue({
+  "usingComponents": {
+    "master": "/components/Master/Master"
+  }
+},{
+    data: {
+      tree: [],
+      title:'',
+      nickName:'',
+      userNickName:'系统用户',
+      enterpriseItems:[],
+      enterprise:[],
+      enterpriseVisible:false,
+      unitId:'',
+      enterpriseObj:{}
+    },
+    methods: {
+      getItem: function (event, next) {
+        var index = event.currentTarget.dataset.index.toString();
+        index = index ? index.split(',') : [];
+        var tree = this.getData('tree'), item = '',parent = '';
+        for (var i = 0; i < index.length; i++) {
+          if (i === 0) {
+            item = tree[index[0]];
+          } else {
+            parent = item;
+            item = item.children[index[i]];
+          }
+        }
+        next.call(this, item, tree, index,parent);
+      },
+      change: function (event) {
+        this.getItem(event, function (item, tree) {
+          item.opened = !item.opened;
+          this.setData({
+            tree: tree
+          });
+        });
+      },
+      delet: function (event) {
+        var _this = this;
+        this.getItem(event, function (item, tree, index,parent) {
+          G.confirmx('确定删除?', function () {
+            G.ajax(api + '?id=' + item.id, function (ret) {
+              if (ret.errorMsg) {
+                G.showToast('删除失败!!' + ret.errorMsg);
+              } else {
+                if(parent){
+                  parent.children.splice(index[index.length - 1], 1);
+                }else{
+                  tree.splice(index[0], 1);
+                }
+                _this.setData({
+                  tree: tree
+                });
+              }
+            }, {
+                meth: 'DELETE'
+              })
+          })
+        })
+      },
+      users:function(event){
+        this.getItem(event, function (item) {
+          this.$go('/pages/unit/user?name=' + item.name + '&unitId=' + item.unitId);
+        })
+      },
+      enterprises:function(event){
+        this.getItem(event, function (item) {
+          this.unitId = item.unitId
+          G.get('/api/model/unit_enterprise',{unitId:item.unitId}).then(res => {
+            this.enterprise = []
+            this.enterpriseObj = {}
+            for(let i = 0; i < res.length; i ++){
+              this.enterprise.push(res[i].enterpriceId)
+              this.enterpriseObj[res[i].enterpriceId] = true
+            }
+            this.enterpriseVisible = true
+          })
+        })
+      },
+      changeEnterprise(id){
+        if(!this.enterpriseObj[id]){
+          G.post('/api/model/unit_enterprise',{unitId:this.unitId,enterpriceId:id}).then(res => {
+            if(!res.errorMsg) this.enterpriseObj[id] = true
+          })
+        }else{
+          G.delete('/api/model/unit_enterprise',{unitId:this.unitId,enterpriceId:id,sql:{real:true}}).then(res => {
+            if(!res.errorMsg) this.enterpriseObj[id] = false
+          })
+        }
+      },
+      edit: function (event) {
+        var _this = this;
+        this.getItem(event, function (item) {
+          G.Storage.set('modeleditquery', {
+            values: item,
+            title: '修改 ' + item.name,
+            meth: 'PUT',
+            refresh: this.getList,
+            models: models,
+            url: api
+          });
+          this.$go('/pages/model/edit/edit');
+        })
+      },
+      add: function (event) {
+        var _this = this;
+        this.getItem(event, function (item) {
+          G.Storage.set('modeleditquery', {
+            values: {},
+            title: (item ? item.name : '') + ' 新增子' + _this.getData('nickName'),
+            meth: 'POST',
+            refresh: this.getList,
+            models: models,
+            url: api,
+            submit: function (data) {
+              if (item) {
+                data.parentUnitId = item.unitId;
+                data.level = parseInt(item.level) + 1;
+                //data.unitId = item.unitId || (item.unitId + '_' + G.guid());
+                data.unitId = item.unitId + '_' + G.guid()
+              }else{
+                data.level = 1;
+              }
+              return data;
+            }
+          });
+          this.$go('/pages/model/edit/edit');
+        })
+      },
+      getList: function () {
+        var _this = this,userInfo = G.Storage.get('userInfo');
+        G.ajax(api, function (ret) {
+          if (!ret.errorMsg) {
+            var tree = {
+              '0': {
+                children: []
+              }
+            };
+            for (var i = 0; i < ret.length; i++) {
+              if(ret[i].unitId == userInfo.unitId) ret[i].parentUnitId = '0';
+              ret[i].parentUnitId = ret[i].parentUnitId || '0';
+              ret[i].opened = true;
+              ret[i].children = [];
+              tree[ret[i].unitId] = ret[i];
+              if (tree[ret[i].parentUnitId]) tree[ret[i].parentUnitId].children.push(ret[i])
+            }
+            _this.setData({
+              tree: tree['0'].children
+            })
+          }
+        },{
+          data:{
+            sql:'classifySort'
+          }
+        })
+      }
+    },
+    mounted: function (query) {
+      query = {
+        modelName:'unit',
+        nickName:'网格单位管理'
+      }
+      var title = query.nickName;
+      var _this = this;
+      this.getList();
+      G.ajax('/model/unit', function (ret) {
+        _this.setData({
+          title:title,
+          nickName:query.nickName
+        });
+        models = ret;
+      }, {
+          storageName: 'unitModel'
+      })
+      G.get('/api/model/hw_res_enterprise').then(res => {
+        this.enterpriseItems = res
+      })
+    }
+  });
+})(Y)
+</script>
+<style scoped>
+/*scoped*/
+.list{
+	margin:0rpx 32rpx;
+}
+.Web .list{
+  margin:0rpx 16px;
+}
+.listChild{
+	margin-left:32rpx;
+}
+.Web .listChild{
+  margin-left:16px;
+}
+.itemDiv{
+	padding:32rpx 0rpx;
+}
+.Web .itemDiv{
+  padding:16px 0px;
+}
+.itemName{
+	font-size:32rpx;
+  margin-right:32rpx;
+}
+.Web .itemName{
+  font-size:14px;
+  margin-right:16px;
+}
+.arrow{
+	cursor: pointer;
+	display: block;
+	width: 32rpx;
+	height: 32rpx;
+	float: left;
+	text-align: center;
+	margin-right: 16rpx;
+}
+.Web .arrow{
+  width: 16px;
+  height: 16px;
+  margin-right:8px;
+}
+.arrowImg{
+  width: 16rpx;
+	height: 16rpx;
+}
+.Web .arrowImg{
+  width: 8px;
+  height: 8px;
+}
+.arrowHide{
+	display: block;
+	width: 32rpx;
+	height: 32rpx;
+	float: left;
+	text-align: center;
+	margin-right: 16rpx;
+}
+.Web .arrowHide{
+  width: 16px;
+  height: 16px;
+  margin-right:8px;
+}
+.btn{
+	font-size: 32rpx;
+	margin-right: 16rpx;
+	color:#2f8ccd;
+	cursor: pointer;
+	background: #f1f1f1;
+	padding:8rpx 16rpx;
+	border-radius: 6rpx;
+}
+.Web .btn{
+  font-size:14px;
+  margin-right:8px;
+  padding: 4px 8px;
+  border-radius: 3px;
+}
+.delet{
+	color:#ff0000;
+}
+.addFirst{
+	margin:32rpx 0rpx 16rpx 32rpx;
+}
+.Web .addFirst{
+  margin:16px 0px 8px 16px;
+}
+.addDiv{
+  margin-top:32rpx;
+}
+.Web .addDiv{
+  margin-top:16px;
+}
+.add{
+	color: #e4941d;
+}
+.other{
+  color: #383838;
+}
+</style>

@@ -1,0 +1,47 @@
+<template>
+    <master title="首页">
+        <!-- <img style="width: 100%;" src="/images/index.png" /> -->
+    </master>
+</template>
+
+<script type="text/javascript">
+    (function (G) {
+        G.vue({
+        "usingComponents": {///引入组件
+            "master": "/components/Master/Master",///母版组件
+            "frequency":"/pages/inspection/frequency/frequency",//饼图
+            "rank":"/pages/inspection/ranking/ranking",//排行
+            "completion":"/pages/inspection/completion/completion",//巡查次数完成率
+            "type":"/pages/inspection/type/type",//巡查类型完成率
+            
+        },
+        "enablePullDownRefresh": true,
+        },{
+            created(){
+            },
+            mounted(){
+                
+            },
+            data:{
+            },
+            methods:{
+            },
+        })
+    })(Y)
+</script>
+
+<style scoped>
+.pages{
+    width: 100%;
+    height: 100%;
+    background: #eef2fb;
+}
+.divs {
+    /* margin: 20px; */
+    padding: 20px;
+}
+.grid-content {
+    border-radius: 4px;
+    min-height: 400px;
+}
+</style>

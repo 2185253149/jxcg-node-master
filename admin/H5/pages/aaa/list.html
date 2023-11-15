@@ -1,0 +1,41 @@
+<template>
+    <master :title="title">
+      <listpage ref="listpage"></listpage>
+      <modal :confirm-box-style="contentStyle" title="新增内容" :visible="show">
+        这是一个自定义内容弹出框
+      </modal>
+    </master>
+  </template>
+  <script type="text/javascript">
+  (function (G) {
+  var _this = null;
+  G.vue({
+    "usingComponents": {///引入组件
+      "master": "/components/Master/Master",///母版组件
+      "listpage": "/components/List/Page/Page",///通用列表组件
+      "modal":"/components/Modal/Modal"
+    },
+    "enablePullDownRefresh": true
+  },G.modelList({///配置listpage组件
+        modelName:'standard',///entity名称
+      title:'计分标准',
+      listPage(list,query){///query为前一个页面传过来的参数
+        let type = query.type
+        list.getUrl = '/api/model/standard';///列表请求API
+        if(query.type) list.getUrl += '&type=' + query.type
+      },
+      
+    },{
+      data:{
+        contentStyle:'',
+        show:false
+      },
+      mounted:function(query){
+        _this = this
+      }
+    }));
+  })(Y)
+  </script>
+  <style scoped>
+    
+  </style>

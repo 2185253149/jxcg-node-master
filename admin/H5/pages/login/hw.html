@@ -1,0 +1,114 @@
+<template>
+  <div class="loginBox">
+    <div class="form-box">
+      <div class="user-head">
+        <img
+          src="/images/user_head.png"
+          alt="">
+      </div>
+      <el-input v-model="userName" placeholder="请输入账号或手机号" style="margin-bottom: 10px;"></el-input>
+      <el-input v-model="passWord" placeholder="请输入密码" show-password></el-input>
+      <el-button class="loginBtn" type="primary" :disabled="submiting" @click="submit">{{submiting ? '登录中...' :
+        '登录'}}</el-button>
+    </div>
+    <div class="logo">
+      <img src="/images/logo-admin.png" alt="">
+    </div>
+  </div>
+</template>
+<script type="text/javascript">
+  (function (G) {
+    G.vue({
+      "usingComponents": {
+        "formitems": "/components/Form/Items/Items"
+      },
+      "navigationBarTitleText": "登录"
+    }, {
+      noLogin: true,
+      data: {
+        userName: '',
+        passWord: '',
+        submiting: false
+      },
+      mounted(query){
+        if(query.code){
+          let base64 = new G.Base64()
+          let code = base64.decodeURI(query.code).split('|')
+          this.submit(code[0],code[1],true)
+        }
+      },
+      methods: {
+        submit: function (userName,passWord,autoLogin) {
+          userName = typeof userName == 'string' ? userName : this.userName
+          passWord = typeof passWord == 'string' ? passWord : this.passWord
+          if (!userName || !passWord) {
+            G.toask('用户名和密码不能为空')
+            return false
+          }
+          this.setData({ submiting: true });
+          G.post('{JAVAURL}/user/login', {
+            userName: userName,
+            passWord: autoLogin ? passWord : G.MD5(passWord),
+            platform: G.platform
+          }).then(ret => {
+            this.setData({ submiting: false });
+            if (!ret.errorMsg) {
+              G.Storage.set('user', ret, 1);
+              var activeGroupId = G.Storage.get('groupId', 1);
+              G.Storage.remove('groupId');
+              var hasActive = false;
+              for (var i = 0; i < ret.groups.length; i++) if (activeGroupId == ret.groups[i].groupId) hasActive = true;
+              if (!hasActive && ret.groups[0]) activeGroupId = ret.groups[0].groupId;
+              G.Storage.set('groupId', activeGroupId, 1);
+              G.Storage.get('autoLogin')(function () {
+                G.$go(G.Storage.get('loginRedirectTo') || '/pages/grid/list', 'redirectTo')
+              })
+            }
+          })
+        }
+      }
+    });
+  })(Y)
+
+</script>
+<style scoped>
+  .loginBox {
+    background-image: url('/images/login_bg.png');
+    background-size: 100% 100%;
+    height: 100vh;
+    position: relative;
+  }
+
+  .form-box {
+    width: 290px;
+    height: 300px;
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    margin-left: -145px;
+    margin-top: -150px;
+
+  }
+
+  .user-head {
+    text-align: center;
+    margin-bottom: 55px;
+  }
+
+  .user-head img {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+
+  }
+  .loginBtn {
+    width: 290px;
+    margin-top: 20px;
+  }
+  .logo {
+    position: absolute;
+    bottom: 40px;
+    width: 100%;
+    text-align: center;
+  }
+</style>

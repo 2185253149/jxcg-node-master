@@ -1,0 +1,61 @@
+<template>
+  <div class="news">
+    <div class="newsTitle">{{title}}</div>
+    <div class="newsAuthor">
+      <span v-if="author">作者:{{author}}</span>
+      <span>发布时间:{{time}}</span>
+    </div>
+    <div class="digest">{{digest}}</div>
+    <div v-html="content"></div>
+  </div>
+</template>
+<script type="text/javascript">
+(function (G) {
+G.vue({
+  "usingComponents": {///引入组件
+    "MapPolygon": "/components/Input/Map/Polygon/Polygon",
+  },
+  "enablePullDownRefresh": true,
+  "navigationBarTitleText":"新闻详情"
+},{
+  noLogin:true,
+  data:{
+    content:'...',
+    digest:'',
+    author:'',
+    time:'',
+    title:''
+  },
+  mounted(query){
+    G.get('/api/model/article',{id:query.id}).then(res => {
+      this.setData({
+        ...res
+      })
+    })
+  }
+});
+})(Y)
+</script>
+<style scoped>
+  .news{
+    margin:16px;
+  }
+  .digest{
+    background: #e4e4e4;
+    color: #999;
+    margin:16px 0px;
+    padding: 8px;
+  }
+  .newsAuthor{
+    text-align: center;
+  }
+  .newsAuthor span{
+    margin-right: 16px;
+    color: #999;
+  }
+  .newsTitle{
+    font-size: 26px;
+    text-align: center;
+    padding-bottom:16px;
+  }
+</style>

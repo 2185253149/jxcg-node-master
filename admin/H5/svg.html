@@ -1,0 +1,679 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <title>自定义流程-svg版本</title>
+  <style>
+    html,
+    body,
+    #container {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-size: 12px;
+      background-color: #efefef;
+    }
+
+    #svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    #contextmenu {
+      background: #fff;
+      border: 1px solid #e4e4e4;
+      position: fixed;
+      min-width: 100px;
+      min-height: 30px;
+      padding-left: 16px;
+      line-height: 30px;
+      cursor: pointer;
+    }
+    #tips{
+      position: fixed;
+      right: 40px;
+      bottom:40px;
+      color: #ccc;
+    }
+    .userType span{
+      color: #fff;
+      margin-right: 4px;
+    }
+    .userType.active{
+      color:#df1919;
+    }
+    .userType.active span{
+      color:#df1919;
+    }
+  </style>
+</head>
+
+<body oncontextmenu="return false">
+  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg">
+    <g id="lineGroup"></g>
+    <g id="nodeGroup"></g>
+  </svg>
+  <div id="contextmenu" oncontextmenu="return false"></div>
+  <div id="tips">提示:点击空白区域新建节点</div>
+</body>
+
+</html>
+<script src="js/tool.js"></script>
+<script>
+  window.onload = () => {
+    let defaultColor = '#666'///默认节点颜色
+    let defaultActiveColor = '#409eff'///当前节点颜色
+    let defaultDisColor = '#ccc'///历史节点颜色
+    let prevMousedownTime = new Date();
+    function getNodeRect(node) {
+      let transform = node.getAttribute('transform') || 'translate(0,0)'
+      transform = transform.replace('translate(', '').replace(')', '').split(',')
+      let x = parseInt(transform[0]), y = parseInt(transform[1])
+      let width = parseInt(node.getAttribute('width')), height = parseInt(node.getAttribute('height'))
+      return {
+        x,
+        y,
+        width,
+        height,
+        cx: x + width / 2,
+        cy: y + height / 2,
+        id: node.getAttribute('id')
+      }
+    }
+    function dragStart(event) {
+      let type = event.target.getAttribute('type')
+      prevMousedownTime = new Date()
+      if (Contextmenu.context) Contextmenu.close()
+      switch (type) {
+        case 'node_rect':
+        case 'node_text':
+          let node = event.target.parentNode
+          if(task){
+            // let nodeId = node.getAttribute('id')
+            // let taskDetailId = node.getAttribute('taskDetailId')
+            // if(taskDetailId && window.TaskDetail) window.TaskDetail(task.id,nodeId,taskDetailId)
+            return false
+          }
+          if (!window.moving) {
+            let rect = getNodeRect(node)
+            node.sx = rect.x
+            node.sy = rect.y
+            node.clientX = event.clientX
+            node.clientY = event.clientY
+            window.moving = node
+          }
+          break;
+      }
+    }
+    function drag(event) {
+      if (window.moving) {
+        let transform = [window.moving.sx + event.clientX - window.moving.clientX, window.moving.sy + event.clientY - window.moving.clientY].join(',')
+        window.moving.setAttribute('transform', `translate(${transform})`)
+        let froms = window.moving.getAttribute('froms')
+        if (froms) {
+          froms = froms.split(',')
+          for (let i = 0; i < froms.length; i++) {
+            if (froms[i]) nodeLineNode(nodeGroup.querySelector('#' + froms[i]), window.moving)
+          }
+        }
+        let tos = window.moving.getAttribute('tos')
+        if (tos) {
+          tos = tos.split(',')
+          for (let i = 0; i < tos.length; i++) {
+            if (tos[i]) nodeLineNode(window.moving, nodeGroup.querySelector('#' + tos[i]))
+          }
+        }
+      } else if (window.lineCreating) {
+        let line = window.lineCreating.querySelector('line')
+        line.setAttribute('x2', event.clientX - 2)
+        line.setAttribute('y2', event.clientY - 2)
+      }
+    }
+
+    let Contextmenu = {
+      context: document.querySelector('#contextmenu'),
+      open(event) {
+        if(task) return false
+        let type = event.target.getAttribute('type')
+        this.context.style.display = 'block'
+        this.context.style.left = event.clientX + 'px'
+        this.context.style.top = event.clientY + 'px'
+        this.context.innerHTML = ''
+        let btns = []
+        switch (type) {
+          case null:
+            btns = [{
+              innerHTML: '新增节点',
+              onclick() {
+                let node = addNode({
+                  x: event.clientX,
+                  y: event.clientY
+                })
+                if(window.NodeCreate) window.NodeCreate(node)
+                if(window.FlowUpdate) window.FlowUpdate({svg: svg.innerHTML})
+                Contextmenu.close()
+              }
+            }]
+            break;
+          case 'node_rect':
+          case 'node_text':
+            btns = [{
+              innerHTML: '设置为起点',
+              onclick(event1) {
+                let id = event.target.parentNode.getAttribute('id')
+                changeCurrentNode(id)
+                if(window.FlowUpdate) window.FlowUpdate({ f_nodeId:id, svg: svg.innerHTML })
+                Contextmenu.close()
+              }
+            },{
+              innerHTML: '添加分支',
+              onclick(event1) {
+                let rect = getNodeRect(event.target.parentNode)
+                window.lineCreating = addLine({
+                  x1: rect.x + rect.width / 2,
+                  y1: rect.y + rect.height / 2,
+                  x2: event1.clientX,
+                  y2: event1.clientY
+                })
+                window.lineCreating.node = event.target.parentNode
+                Contextmenu.close()
+              }
+            }, {
+              innerHTML: '编辑节点',
+              onclick(event1) {
+                let id = event.target.parentNode.getAttribute('id')
+                let editNode = nodeGroup.querySelector('#' + id)
+                let editNodeRect = editNode.querySelector('rect')
+                let editNodeText = editNode.querySelector('text')
+                new Promise(next => {
+                  if(window.NodeGet){
+                    window.NodeGet(id).then(next)
+                  }else{
+                    next({id,name:editNodeText.innerHTML})
+                  }
+                }).then(node => {
+                  if(window.EditDialog) window.EditDialog({
+                    title:'编辑节点',
+                    models:{
+                      name:{
+                        label:'名称',
+                        type:'input',
+                        rule:{ NotNull:true }
+                      },
+                      statusCode:{
+                        label:'业务状态码',
+                        type:'input'
+                      },
+                      form:{
+                        label:'表单配置',
+                        attr:{
+                          placeholder:'请输入JSON格式配置内容'
+                        },
+                        type:'textarea',
+                        rule:{
+                          Function(form){
+                            if(form){
+                              try{
+                                JSON.parse(form)
+                              }catch(e){
+                                return [false,'JSON格式校验不通过']
+                              }
+                            }
+                            return [true]
+                          }
+                        }
+                      }
+                    },
+                    values:{
+                      name:node.name,
+                      statusCode:node.statusCode,
+                      form:node.form
+                    }
+                  })
+                  window.CallBack = (data) => {
+                    node.name = data.name
+                    node.statusCode = data.statusCode
+                    node.form = data.form ? data.form.replace(/\\/g,'') : ''
+                    editNodeRect.setAttribute('name',node.name)
+                    editNodeText.setAttribute('name',node.name)
+                    editNodeText.innerHTML = node.name
+                    if(window.NodeUpdate) window.NodeUpdate(node)
+                    if(window.FlowUpdate) window.FlowUpdate({ svg:svg.innerHTML })
+                  }
+                  Contextmenu.close()
+                })
+              }
+            }, {
+              innerHTML: '删除节点',
+              onclick() {
+                let id = event.target.parentNode.getAttribute('id')
+                ///清除出发线
+                let fromLines = lineGroup.querySelectorAll(`g[from="${id}"]`)
+                let reg = new RegExp(id + ',?')
+                for (let i = 0; i < fromLines.length; i++) {
+                  let toid = fromLines[i].getAttribute('to')
+                  let toNode = nodeGroup.querySelector('#' + toid)
+                  if(window.LineRemove) window.LineRemove(fromLines[i].getAttribute('id'))
+                  toNode.setAttribute('froms', toNode.getAttribute('froms').replace(reg, ''))
+                  lineGroup.removeChild(fromLines[i])
+                }
+                ///清除到达线
+                let toLines = lineGroup.querySelectorAll(`g[to="${id}"]`)
+                for (let i = 0; i < toLines.length; i++) {
+                  let fromid = toLines[i].getAttribute('from')
+                  let fromNode = nodeGroup.querySelector('#' + fromid)
+                  if(window.LineRemove) window.LineRemove(toLines[i].getAttribute('id'))
+                  fromNode.setAttribute('tos', fromNode.getAttribute('tos').replace(reg, ''))
+                  lineGroup.removeChild(toLines[i])
+                }
+                nodeGroup.removeChild(event.target.parentNode)
+                if(window.NodeRemove) window.NodeRemove(id)
+                if(window.FlowUpdate) window.FlowUpdate({svg: svg.innerHTML})
+                Contextmenu.close()
+              }
+            }]
+            break;
+          case 'line':
+          case 'line_text':
+            btns = [{
+              innerHTML: '编辑分支',
+              onclick() {
+                let lineGroup = event.target.parentNode
+                let id = lineGroup.getAttribute('id')
+                let lineText = lineGroup.querySelector('text')
+                window.LineGet(id).then(line => {
+                  window.EditDialog({
+                    title:'编辑分支',
+                    models:{
+                      name:{
+                        label:'名称',
+                        type:'input',
+                        rule:{ NotNull:true }
+                      },
+                      sort:{
+                        label:'排序',
+                        type:'input',
+                        rule:{ PositiveInt:true },
+                        attr:{ type:'number' }
+                      }
+                    },
+                    values:{
+                      name:line.name || lineText.innerHTML,
+                      sort:line.sort || 0
+                    }
+                  })
+                  window.CallBack = (data) => {
+                    lineText.innerHTML = data.name
+                    if(window.LineUpdate) window.LineUpdate({ id, ...data })
+                    if(window.FlowUpdate) window.FlowUpdate({svg: svg.innerHTML})
+                  }
+                  Contextmenu.close()
+                })
+              }
+            },{
+              innerHTML: '删除分支',
+              onclick() {
+                let line = event.target.parentNode
+                let fromid = line.getAttribute('from')
+                let fromNode = nodeGroup.querySelector('#' + fromid)
+                let toid = line.getAttribute('to')
+                let toNode = nodeGroup.querySelector('#' + toid)
+                if(fromNode) fromNode.setAttribute('tos', fromNode.getAttribute('tos').replace(new RegExp(toid + ',?'), ''))
+                if(toNode) toNode.setAttribute('froms', toNode.getAttribute('froms').replace(new RegExp(fromid + ',?'), ''))
+                lineGroup.removeChild(line)
+                if(window.LineRemove) window.LineRemove(line.getAttribute('id'))
+                if(window.FlowUpdate) window.FlowUpdate({svg: svg.innerHTML})
+                Contextmenu.close()
+              }
+            }]
+            if(event.target.parentNode.getAttribute('type') != 1){
+              let id = event.target.parentNode.getAttribute('id')
+              btns.push({
+                innerHTML: '<div style="color:#ccc;border-bottom:1px solid #e4e4e4;">指定处理人</div>'
+              })
+              btns.push({
+                innerHTML: '<span id="userType_start" class="userType"><span>√</span>流程发起人</span>',
+                onclick() {
+                  if(window.LineUpdate) window.LineUpdate({ id, userType:'start' })
+                  Contextmenu.close()
+                }
+              })
+              btns.push({
+                innerHTML: '<span id="userType_prev" class="userType"><span>√</span>上一处理人</span>',
+                onclick() {
+                  if(window.LineUpdate) window.LineUpdate({ id, userType:'prev' })
+                  Contextmenu.close()
+                }
+              })
+              btns.push({
+                innerHTML: '<span id="userType_self" class="userType"><span>√</span>当前处理人</span>',
+                onclick() {
+                  if(window.LineUpdate) window.LineUpdate({ id, userType:'self' })
+                  Contextmenu.close()
+                }
+              })
+              btns.push({
+                innerHTML: '<span id="userType_any" class="userType"><span>√</span>任意处理人</span>',
+                onclick() {
+                  if(window.LineUpdate) window.LineUpdate({ id, userType:'any' })
+                  Contextmenu.close()
+                }
+              })
+              btns.push({
+                innerHTML: '<span id="userType_select" class="userType"><span>√</span>选择用户</span>',
+                onclick() {
+                  if(window.SetUserList) window.SetUserList(id)
+                  Contextmenu.close()
+                }
+              })
+              if(window.LineGet) window.LineGet(id).then(line => {
+                if(line.userType) document.querySelector('#userType_' + line.userType).className = 'userType active'
+              })
+            }
+            break;
+        }
+
+        for (let i = 0; i < btns.length; i++) this.context.appendChild(Y.creatElement('div', btns[i]))
+      },
+      close() {
+        this.context.innerHTML = ''
+        this.context.style.display = 'none'
+      }
+    }
+
+    let prevMouseUpTime;
+    function dragEnd(event) {
+      let type = event.target.getAttribute('type')
+      let eventType = event.type
+      let nowTime = new Date()
+      if (event.which == 3) {///鼠标右键
+        eventType = 'rightclick'
+      } else {
+        if (nowTime - prevMousedownTime < 500) {
+          eventType = 'click'
+          if (nowTime - prevMouseUpTime < 500) {
+            eventType = 'dbclick'
+          }
+          prevMouseUpTime = nowTime
+        }
+      }
+      if (eventType == 'rightclick') {
+        Contextmenu.open(event)
+        return false
+      }
+      if (window.moving) {
+        window.moving = undefined
+        if(window.FlowUpdate) window.FlowUpdate({svg: svg.innerHTML})
+      }
+      if (window.lineCreating) {
+        let from_id = window.lineCreating.node.getAttribute('id'), to_id = event.target.parentNode.getAttribute('id')
+        if (event.target.parentNode.getAttribute('type') != 'node' ///非node节点
+          || from_id == to_id ///起点终点同一node
+          || document.querySelector('#_' + from_id + '_' + to_id) ///连线已经存在
+          ) {
+          lineGroup.removeChild(window.lineCreating)
+        } else {
+          let line = {
+            id:'_' + from_id + '_' + to_id,
+            name:'下一步',
+            fromNodeId:from_id,
+            toNodeId:to_id,
+            type:0
+          }
+          let _line = document.querySelector('#_' + to_id + '_' + from_id)
+          if(_line && _line.getAttribute('type') != 1){//添加反向连线
+            line.name = '驳回'
+            line.type = 1,
+            line.userType = 'prev'
+          }
+          if(window.LineCreate) window.LineCreate(line)
+          window.lineCreating.setAttribute('id', line.id)
+          window.lineCreating.setAttribute('type', line.type)
+          window.lineCreating.setAttribute('from', line.fromNodeId)
+          window.lineCreating.setAttribute('to', line.toNodeId)
+          window.lineCreating.querySelector('text').setAttribute('name', line.name)
+          window.lineCreating.querySelector('text').innerHTML = line.name
+          let froms = event.target.parentNode.getAttribute('froms')
+          if (froms) {
+            froms = froms.replace(new RegExp(from_id + ',?'), '').split(',')
+          } else {
+            froms = []
+          }
+          froms.push(from_id)
+          event.target.parentNode.setAttribute('froms', froms.join(','))
+          let tos = window.lineCreating.node.getAttribute('tos')
+          if (tos) {
+            tos = tos.replace(new RegExp(to_id + ',?'), '').split(',')
+          } else {
+            tos = []
+          }
+          tos.push(to_id)
+          window.lineCreating.node.setAttribute('tos', tos.join(','))
+          nodeLineNode(window.lineCreating.node, event.target.parentNode)///校正节点连线
+          if(window.FlowUpdate) window.FlowUpdate({svg: svg.innerHTML})
+        }
+        window.lineCreating = undefined
+      }
+    }
+
+    function nodeLineNode(fromNode, toNode) {///连接两个节点
+      let fromRect = getNodeRect(fromNode), toRect = getNodeRect(toNode)
+      let lineGroup = document.querySelector(`#_${fromRect.id}_${toRect.id}`)
+      let line = lineGroup.querySelector('line')
+      let lineText = lineGroup.querySelector('text')
+      let x1 = fromRect.cx,y1 = fromRect.cy,x2 = 0,y2 = 0
+      line.setAttribute('x1', x1)
+      line.setAttribute('y1', y1)
+      ///横移坐标原点，计算角度 返回角度-180~180
+      let angle = -Math.atan2(toRect.cy - fromRect.cy, toRect.cx - fromRect.cx) / Math.PI * 180
+      if (angle < 0) angle = 360 + angle
+      ///判断方位
+      if (angle >= 0 && angle < 22.5) {///左中
+        x2 = toRect.x
+        y2 = toRect.y + toRect.height / 2
+      } else if (angle >= 22.5 && angle < 67.5) {///左下
+        x2 = toRect.x
+        y2 = toRect.y + toRect.height
+      } else if (angle >= 67.5 && angle < 112.5) {///下中
+        x2 = toRect.x + toRect.width / 2
+        y2 = toRect.y + toRect.height
+      } else if (angle >= 112.5 && angle < 157.5) {///右下
+        x2 = toRect.x + toRect.width
+        y2 = toRect.y + toRect.height
+      } else if (angle >= 157.5 && angle <= 202.5) {///右中
+        x2 = toRect.x + toRect.width
+        y2 = toRect.y + toRect.height / 2
+      } else if (angle >= 202.5 && angle < 247.5) {///右上
+        x2 = toRect.x + toRect.width
+        y2 = toRect.y
+      } else if (angle >= 247.5 && angle < 292.5) {///上中
+        x2 = toRect.x + toRect.width / 2
+        y2 = toRect.y
+      } else if (angle >= 292.5 && angle < 337.5) {///左上
+        x2 = toRect.x
+        y2 = toRect.y
+      } else if (angle >= 337.5 && angle < 360) {///左中
+        x2 = toRect.x
+        y2 = toRect.y + toRect.height / 2
+      }
+      line.setAttribute('x2', x2)
+      line.setAttribute('y2', y2)
+      lineText.setAttribute('x',x1 + (x2 - x1) / 2)
+      lineText.setAttribute('y',y1 + (y2 - y1) / 2)
+    }
+
+    let svg = document.querySelector("#svg")
+    let addBtn = document.querySelector('#addBtn')
+    svg.addEventListener('mousedown', dragStart)
+    svg.addEventListener('mousemove', drag)
+    svg.addEventListener('mouseup', dragEnd)
+    svg.addEventListener('mouseleave', dragEnd)
+    let lineGroup = svg.querySelector('#lineGroup')
+    let nodeGroup = svg.querySelector('#nodeGroup')
+    let flow,task,history_nodes = []
+    window.init = (_flow,_task,_history_nodes) => {
+      flow = _flow
+      task = _task
+      history_nodes = _history_nodes
+      if(task) document.querySelector('#tips').innerHTML = '点击已完成节点可查看详情'
+      if(flow.svg){
+        svg.innerHTML = flow.svg
+        lineGroup = svg.querySelector('#lineGroup')
+        nodeGroup = svg.querySelector('#nodeGroup')
+        if(history_nodes && history_nodes.length){
+          for(let i = 0; i < history_nodes.length; i ++){
+            let nodeId = history_nodes[i].f_nodeId,noded = nodeGroup.querySelector('#' + nodeId)
+            noded.querySelector('rect').setAttribute('fill',defaultDisColor)
+            noded.querySelector('rect').setAttribute('stroke',defaultDisColor)
+            noded.setAttribute('taskDetailId',history_nodes[i].id)
+          }
+        }
+        changeCurrentNode(task && task.f_nodeId ? task.f_nodeId : flow.f_nodeId)
+      }
+    }
+    ///设置当前节点或开始节点
+    function changeCurrentNode(id){
+      let currentNode = nodeGroup.querySelector('g[isfirst="true"]')
+      if(currentNode){
+        currentNode.removeAttribute('isfirst')
+        currentNode.querySelector('rect').setAttribute('fill',defaultColor)
+        currentNode.querySelector('rect').setAttribute('stroke',defaultColor)
+      }
+      currentNode = nodeGroup.querySelector('#' + id)
+      if(currentNode){
+        currentNode.setAttribute('isfirst','true')
+        currentNode.querySelector('rect').setAttribute('fill',defaultActiveColor)
+        currentNode.querySelector('rect').setAttribute('stroke',defaultActiveColor)
+      }
+    }
+    function addNode(args) {
+      args = args || {}
+      let node = {
+        id:'n' + new Date().getTime(),
+        name:args.name || '新建节点',
+        form:''
+      }
+      let x = args.x || 10, y = args.y || 10
+      let width = args.width || 100, height = args.height || 50
+      let pointSize = args.pointSize || 8
+      ///绘制组
+      let group = Y.creatElement('g', {
+        svg: true,
+        parent: nodeGroup,
+        id: node.id,
+        attr: {
+          type: 'node',
+          transform: `translate(${x},${y})`,
+          width,
+          height
+        }
+      })
+      x = 0
+      y = 0
+      ///绘制矩形背景
+      Y.creatElement('rect', {
+        svg: true,
+        parent: group,
+        attr: {
+          x,
+          y,
+          width,
+          height,
+          fill: args.color || defaultColor,
+          stroke: args.color || defaultColor,
+          name:node.name,
+          strokeWidth: 0,
+          type: 'node_rect'
+        }
+      })
+      ///绘制文本
+      Y.creatElement('text', {
+        svg: true,
+        parent: group,
+        innerHTML: node.name,
+        attr: {
+          x: x + 10,
+          y: y + 25,
+          fill: '#ffffff',
+          stroke: '#ffffff',
+          name: node.name,
+          strokeWidth: 0,
+          type: 'node_text'
+        }
+      })
+      return node
+    }
+    ///
+    function addLine(args) {
+      args = args || {}
+      ///绘制组
+      let group = Y.creatElement('g', {
+        svg: true,
+        parent: lineGroup,
+        id: 'l' + new Date().getTime(),
+        attr: {
+          type: 'line'
+        }
+      })
+      let markerId = '_' + new Date().getTime()
+      ///绘制箭头
+      Y.creatElement('path', {
+        svg: true,
+        parent: Y.creatElement('marker', {
+          svg: true,
+          parent: group,
+          attr: {
+            id: markerId,
+            type: 'line_marker',
+            markerWidth: 10,
+            markerHeight: 10,
+            refX: 10,
+            refY: 5,
+            orient: 'auto',
+            type: 'marker'
+          }
+        }),
+        attr: {
+          type: 'line_marker_path',
+          d: 'M0,0 L2,5 L0,10 L10,5 L0,0',
+          fill: defaultColor
+        }
+      })
+      ///绘制线段1
+      Y.creatElement('line', {
+        svg: true,
+        parent: group,
+        attr: {
+          x1: args.x1,
+          y1: args.y1,
+          x2: args.x2,
+          y2: args.y2,
+          stroke: defaultColor,
+          'stroke-width': 2,
+          type: 'line',
+          'marker-end': `url(#${markerId})`
+        }
+      })
+      ///绘制文本
+      Y.creatElement('text', {
+        svg: true,
+        parent: group,
+        innerHTML: '下一步',
+        attr: {
+          x: args.x2 - (args.x2 - args.x1) / 2,
+          y: args.y2 - (args.y2 - args.y1) / 2,
+          fill: defaultColor,
+          stroke: defaultColor,
+          name: '下一步',
+          strokeWidth: 0,
+          type: 'line_text'
+        }
+      })
+      return group
+    }
+  }
+</script>

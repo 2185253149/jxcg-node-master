@@ -1,0 +1,28 @@
+<template>
+  <div class="nodeName">{{task.f_flowName}}</div>
+  <div v-key="detail.id" v-for="detail in details">
+    <div class="tit flex_row_default" v-if="detail.form.tit && !detail.form.tit.type" @click="detail.form.tit.hidden = !detail.form.tit.hidden">
+      <div>{{detail.form.tit.label}}</div>
+      <span class="arrow">{{detail.form.tit.hidden ? '展开详情' : '隐藏'}}</span>
+    </div>
+    <div :hidden="detail.form.tit.hidden && !detail.form.tit.type">
+      <formitems :ref="detail.id" :read-only="detail.readOnly" :models="detail.form" :values="detail.data"></formitems>
+    </div>
+  </div>
+  <div v-if="btns.actions.length" style="margin-left: 32px;">
+    <mixinput type="select" :value="form.toNodeId" @change="changeToNodeId" :attr="btns"></mixinput>
+  </div>
+  <formitems ref="actionForm"></formitems>
+  <div style="text-align: right;">
+    <el-button
+      @click="back"
+      >返回</el-button
+    >
+    <el-button
+      v-if="btns.actions.length"
+      type="primary"
+      @click="action"
+      >确定</el-button
+    >
+  </div>
+</template>

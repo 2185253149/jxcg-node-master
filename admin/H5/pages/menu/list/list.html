@@ -1,0 +1,193 @@
+<template>
+<master title="菜单管理">
+  <div class="addFirst addDiv">
+    <span class="btn add" data-index="" @click="add">+ 一级菜单</span>
+  </div>
+  <div v-for="(item,index) in tree" key="id" class="list">
+    <div class="itemDiv">
+      <div v-if="item.children.length" class="arrow" :data-index="index" @click="change">
+        <img class="arrowImg" v-if="item.opened" src="/images/arrow_grey_down.png"></img>
+        <img class="arrowImg" v-else src="/images/arrow_grey_right.png"></img>
+      </div>
+      <span v-else class="arrowHide"></span>
+      <span class="itemName">{{item.name}}</span>
+      <span v-if="item.editAble == 1" class="btn" :data-index="index" @click="edit">编辑</span>
+      <span v-if="item.editAble == 1 && !item.children.length" class="btn delet" :data-index="index" @click="delet">删除</span>
+    </div>
+    <div v-if="item.opened" class="listChild">
+      <div v-if="item.children.length" key="id" v-for="(item1,index1) in item.children">
+        <div class="itemDiv">
+          <div v-if="item1.children.length" class="arrow" :data-index="index + ',' + index1" @click="change">
+            <img class="arrowImg" v-if="!item1.opened" src="/images/arrow_grey_down.png"></img>
+            <img class="arrowImg" v-else src="/images/arrow_grey_right.png"></img>
+          </div>
+          <span v-else class="arrowHide"></span>
+          <span class="itemName">{{item1.name}}</span>
+          <span class="btn" v-if="item1.editAble == 1" :data-index="index + ',' + index1" @click="edit">编辑</span>
+          <span v-if="item1.editAble == 1 && !item1.children.length" class="btn delet" :data-index="index + ',' + index1" @click="delet">删除</span>
+        </div>
+        <div v-if="!item1.opened" class="listChild">
+          <div v-for="(item2,index2) in item1.children" key="id">
+            <div class="itemDiv">
+              <span class="arrowHide"></span>
+              <span class="itemName">{{item2.name}}</span>
+              <span class="btn" v-if="item2.editAble == 1" :data-index="index + ',' + index1 + ',' + index2" @click="edit">编辑</span>
+              <span class="btn delet" v-if="item2.editAble == 1" :data-index="index + ',' + index1 + ',' + index2" @click="edit">删除</span>
+            </div>
+          </div>
+          <div v-if="item1.editAble == 1" class="addDiv">
+            <span class="arrowHide"></span>
+            <span class="btn add" :data-index="index + ',' + index1" @click="add">+ {{item1.name}}子菜单</span>
+          </div>
+        </div>
+      </div>
+      <div v-if="item.editAble == 1" class="addDiv">
+        <span class="arrowHide"></span>
+        <span class="btn add" :data-index="index" @click="add">+ {{item.name}}子菜单</span>
+      </div>
+    </div>
+  </div>
+</master>
+</template>
+<script type="text/javascript">
+(function (G) {
+  G.vue({
+  "usingComponents": {
+    "master": "/components/Master/Master"
+  }
+},G.classifyList({
+    modelName:'menu',
+    nickName:'菜单'
+  },{
+    methods:{
+      getList: function () {
+        var _this = this,userInfo = G.Storage.get('userInfo');
+        Y.ajax('/api/model/menu', function (ret) {
+          if (!ret.errorMsg) {
+            var tree = {
+              '0': {
+                children: []
+              }
+            };
+            for (var i = 0; i < ret.length; i++) {
+              ret[i].parentId = ret[i].parentId || '0';
+              ret[i].opened = true;
+              ret[i].children = [];
+              tree[ret[i].id] = ret[i];
+              if (tree[ret[i].parentId]) {
+                tree[ret[i].parentId].children.push(ret[i])
+                tree[ret[i].parentId].opened = false;
+              }
+            }
+            _this.setData({
+              tree: tree['0'].children
+            })
+          }
+        },{
+          data:{
+            sql:'classifySort',
+            unitId:userInfo.unitId
+          }
+        })
+      }
+    }
+  }))
+})(Y)
+</script>
+<style scoped>
+/*scoped*/
+.list{
+	margin:0rpx 32rpx;
+}
+.Web .list{
+  margin:0rpx 16px;
+}
+.listChild{
+	margin-left:32rpx;
+}
+.Web .listChild{
+  margin-left:16px;
+}
+.itemDiv{
+	padding:32rpx 0rpx;
+}
+.Web .itemDiv{
+  padding:8px 0px;
+}
+.itemName{
+	font-size:32rpx;
+  margin-right:32rpx;
+}
+.Web .itemName{
+  font-size:14px;
+  margin-right:16px;
+}
+.arrow{
+	cursor: pointer;
+	display: block;
+	width: 32rpx;
+	height: 32rpx;
+	float: left;
+	text-align: center;
+	margin-right: 16rpx;
+}
+.Web .arrow{
+  width: 16px;
+  height: 16px;
+  margin-right:8px;
+}
+.arrowImg{
+  width: 16rpx;
+	height: 16rpx;
+}
+.Web .arrowImg{
+  width: 8px;
+  height: 8px;
+}
+.arrowHide{
+	display: block;
+	width: 32rpx;
+	height: 32rpx;
+	float: left;
+	text-align: center;
+	margin-right: 16rpx;
+}
+.Web .arrowHide{
+  width: 16px;
+  height: 16px;
+  margin-right:8px;
+}
+.btn{
+	font-size: 32rpx;
+	margin-right: 16rpx;
+	color:#2f8ccd;
+	cursor: pointer;
+	background: #f1f1f1;
+	padding:8rpx 16rpx;
+	border-radius: 6rpx;
+}
+.Web .btn{
+  font-size:14px;
+  margin-right:8px;
+  padding: 4px 8px;
+  border-radius: 3px;
+}
+.delet{
+	color:#ff0000;
+}
+.addFirst{
+	margin:32rpx 0rpx 16rpx 32rpx;
+}
+.Web .addFirst{
+  margin:16px 0px 8px 16px;
+}
+.addDiv{
+  margin-top:32rpx;
+}
+.Web .addDiv{
+  margin-top:16px;
+}
+.add{
+	color: #e4941d;
+}
+</style>

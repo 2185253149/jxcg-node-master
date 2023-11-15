@@ -1,0 +1,68 @@
+<template>
+    <master title="Element示例">
+        <!-- 搜索区域 -->
+        <div class="searchForm">
+            <div class="searchFormInputs">
+                <el-input class="searchFormInput" v-model="params.title" placeholder="按标题查找"></el-input>
+            </div>
+            <!-- <el-button type="primary" icon="el-icon-search" @click="searchList">查询</el-button> -->
+        </div>
+
+        <!-- 显示所有数据 -->
+        <div class="el-table">
+            <el-table :data="rows" stripe style="width: 100%">
+                <el-table-column prop="photo" label="头图">
+                    <template slot-scope="scope">
+                        <img v-if="scope.row.img" class="photo" :src="scope.row.img" />
+                        <img v-else class="photo" src="@/assets/photo.png" />
+                    </template>
+                </el-table-column>
+                <el-table-column prop="title" label="标题">
+                </el-table-column>
+                <el-table-column prop="author" label="作者">
+                </el-table-column>
+                <el-table-column label="操作" width="320">
+                    <template slot-scope="scope">
+                        <el-button type="primary" size="mini" icon="el-icon-edit"
+                            @click="edit(scope.row)">编辑</el-button>
+                            <el-button type="primary" size="mini" icon="el-icon-edit"
+                                @click="edit(scope.row)">新增</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+
+    </master>
+</template>
+<script type="text/javascript">
+    (function (G) {
+        G.vue({
+            "usingComponents": {///引入组件
+                "master": "/components/Master/Master"///母版组件
+            },
+            "enablePullDownRefresh": true
+        }, {
+            data: {
+                params: {},
+                rows: [
+                    {
+                        img: '1',
+                        title: '2',
+                        author: '3'
+                    },
+                ],
+            },
+            methods: {
+                edit(row) {
+                    pass
+                }
+            },
+            mounted() {
+
+            }
+        });
+    })(Y)
+</script>
+<style scoped>
+
+</style>

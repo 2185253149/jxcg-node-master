@@ -1,0 +1,14 @@
+<div class="components_Input_Map_Polygon_Polygon">
+  <div v-if="!disabled" class="componentBtn">
+    <el-button type="primary" @click="save">{{editing ? '编辑中,点击保存' : '已保存'}}</el-button>
+    <el-button @click="clear">重置</el-button>
+    <div class="componentTips">
+      <div class="componentTipTitle">温馨提示:</div>
+      <div>1、鼠标右键点击地图空白，新增绘图区域</div>
+      <div>2、鼠标左键点击绘图区域，激活绘图区域</div>
+      <div>3、拖到绘图区域圆点，编辑绘图区域</div>
+      <div>4、鼠标双击绘图区域，删除绘图区域</div>
+    </div>
+  </div>
+  <div class="componentMap" :id="name" @mouseout="save" :style="attr.style"></div>
+</div>

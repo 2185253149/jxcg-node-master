@@ -1,0 +1,30 @@
+<template>
+    <!-- 两个饼图 -->
+    <div>
+       <div class="frequency-box">
+        <div style="display: flex;justify-content: end;align-items: center;padding-top: 10px;">
+            <span>选择时间:</span>
+            <el-date-picker
+                    v-model="year"
+                    placeholder="选择年月"
+                    type="month"
+                    value-format="yyyy-MM"
+                    :clearable="false"
+                    prefix-icon="prefix-icon-class"
+                    style="width: 120px;margin-right: 20px;"
+                    @change="changeTime"
+            >
+            </el-date-picker>
+        </div>
+        <el-row :gutter="20" style="margin-top: -35px">
+            <el-col :span="12">
+                <div id="numFrequency" :style="myFrequency" ref="numFrequency"></div>
+
+            </el-col>
+            <el-col :span="12">
+                <div  id="typeFrequency" :style="myFrequency" ref="typeFrequency"></div>
+            </el-col>
+        </el-row>
+       </div>
+    </div>
+</template>

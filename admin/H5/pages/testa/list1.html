@@ -1,0 +1,107 @@
+<template>
+  <master title="每日打卡">
+
+    <div class="only">
+      <div class="center" @click="qiandao">签到</div>
+    </div>
+    <div class="t1">打卡记录</div>
+    <el-table :data="rows" stripe style="width: 100%">
+      <el-table-column prop="userId" label="userId">
+      </el-table-column>
+      <el-table-column prop="createTimeString" label="打卡时间">
+      </el-table-column>
+    </el-table>
+    <!-- 分页 -->
+    <div class="page1">
+      <el-pagination @size-change="sizeChange" @current-change="currentChange" :current-page="params.pageNum"
+        :page-sizes="[10, 100, 200, 300, 400]" :page-size="params.pageSize"
+        layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
+    </div>
+  </master>
+</template>
+<script type="text/javascript">
+  (function (G) {
+    G.vue({
+      "usingComponents": {///引入组件
+        "master": "/components/Master/Master"///母版组件
+      },
+      "enablePullDownRefresh": true
+    }, {
+      data: {
+        rows: [],
+        params: {},
+        total: 0,
+      },
+      methods: {
+        getList() {
+          G.get('/api/model/daka',this.params).then(res => {
+            if (!res.errorMsg) {
+              this.rows = res.rows;
+              this.total = parseInt(res.total);
+              console.log(this.rows,this.total);
+            }
+          })
+        },
+        sizeChange(pageSize) {
+          this.params.pageSize = pageSize;
+          this.params.pageNum = 1;
+          this.getList();
+        },
+        currentChange(pageNum) {
+          console.log('--pageNum',pageNum);
+          this.params.pageNum = pageNum;
+          this.getList();
+        },
+        qiandao() {
+          console.log('qiandao', G.Storage.get('userInfo').id);
+          var param = {
+            userId: G.Storage.get('userInfo').id
+          }
+          G.post('/api/model/daka', param).then(res => {
+            if (!res.errorMsg) {
+              G.toask('签到成功')
+              this.getList()
+            }
+          })
+        }
+      },
+      mounted() {
+        this.params={
+          pageNum: 1,
+          pageSize: 10,
+          userId: G.Storage.get('userInfo').id
+        }
+        this.getList()
+      }
+    });
+  })(Y)
+</script>
+<style scoped>
+  .only {
+    height: 20vh;
+    width: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .center {
+    height: 100px;
+    width: 100px;
+    font-size: 48px;
+    border: 4px solid red;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* margin-top: -200px;
+    margin-right: 200px; */
+  }
+  .t1{
+    padding-left: 100px;
+    background-color: rgb(228, 218, 180);
+    font-size: 48px;
+    flex:1;
+  }
+</style>

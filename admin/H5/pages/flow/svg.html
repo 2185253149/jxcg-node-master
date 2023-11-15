@@ -1,0 +1,214 @@
+<template>
+  <master title="流程管理">
+    <div class="flex_row_default" style="padding:8px 16px;">
+      <div>{{title}}</div>
+      <el-button @click="$back">返回</el-button>
+    </div>
+    <iframe ref="svgIframe" src="./svg.html" width="100%" height="600" frameborder="no" ref="iframe" scrolling="no"></iframe>
+    <el-dialog :visible.sync="visible">
+      <taskDetail @back="visible = false" @close="detailClose" ref="taskDetail"></taskDetail>
+    </el-dialog>
+    <userselect :value="checkedUsers" @change="userChange" ref="userselect" :attr="{max:10,hidden:true}"></userselect>
+    <!-- <el-dialog title="选择人员" :visible.sync="userVisible">
+      <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+      <div style="margin: 15px 0;max-height: 400px;overflow: auto;">
+        <el-checkbox-group v-model="checkedUsers" @change="handleCheckedUsersChange">
+          <el-checkbox v-for="user in users" :label="user.value" :key="user.value">{{user.name}}</el-checkbox>
+        </el-checkbox-group>
+      </div>
+      <div style="text-align: right;">
+        <el-button
+          @click="userVisible = false"
+          >取消</el-button
+        >
+        <el-button
+          type="primary"
+          @click="saveUser"
+          >保存</el-button
+        >
+      </div>
+    </el-dialog> -->
+    <el-dialog :title="svgEditTitle" :visible.sync="svgEditVisible">
+      <div>
+        <formitems :models="svgEdit.models" :values="svgEdit.values" :read-only="svgEdit.readOnly" ref="svgEdit"></formitems>
+      </div>
+      <div style="text-align: right;">
+        <el-button
+          @click="svgEditVisible = false"
+          >取消</el-button
+        >
+        <el-button
+          type="primary"
+          @click="saveSvgEdit"
+          >保存</el-button
+        >
+      </div>
+    </el-dialog>
+  </master>
+</template>
+<script type="text/javascript">
+(function (G) {
+G.vue({
+  "usingComponents": {///引入组件
+    "master": "/components/Master/Master",///母版组件
+    "taskDetail":"/pages/flow/task/detail",
+    "userselect":"/components/Input/UserSelect/Web/index"
+  },
+  "enablePullDownRefresh": true
+},{
+  data:{
+    title:'',
+    flowId:'',
+    taskId:'',
+    svg_window:'',
+    visible:false,
+    userVisible:false,
+    checkAll: false,
+    checkedUsers: '',
+    users: [],
+    allUsers:[],
+    userObj:{},
+    isIndeterminate: true,
+    lineId:'',
+    svgEditVisible:false,
+    svgEditTitle:'',
+    svgEdit:{
+      models:{},
+      values:{},
+      readOnly:false
+    }
+
+  },
+  methods:{
+    detailClose(event){
+      this.visible = true
+    },
+    handleCheckAllChange(val) {
+      this.checkedUsers = val ? this.allUsers : []
+      this.isIndeterminate = false
+    },
+    handleCheckedUsersChange(value) {
+      let checkedCount = value.length
+      this.checkAll = checkedCount === this.users.length
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.users.length
+    },
+    saveUser(){
+      let users = []
+      for(let i = 0; i < this.checkedUsers.length; i ++){
+        users.push(this.userObj[this.checkedUsers[i]])
+      }
+      G.put('/api/model/f_line', { id: this.lineId,users:JSON.stringify(users) }).then(res => {
+        this.userVisible = false
+      })
+    },
+    saveSvgEdit(){
+      var data = this.selectComponent('#svgEdit').submit();
+      if(data && this.svg_window.CallBack(data) !== false) this.svgEditVisible = false
+    },
+    userChange(event){
+      G.put('/api/model/f_line', { id: this.lineId,users:event.detail.value,userType:'select' }).then(res => {
+        //this.userVisible = false
+      })
+    }
+  },
+  mounted(query){
+    this.setData(query)
+    this.svg_window = this.$refs.svgIframe.contentWindow
+    G.get('/api/model/f_flow',{ id:this.flowId }).then(flow => {
+      ///当前节点
+      if(!this.taskId){
+        this.title = flow.name + ' 流程配置'
+        this.svg_window.init(flow)
+        G.get('/api/model/user').then(users => {
+          for(let i = 0; i < users.length; i ++){
+            let user = users[i]
+            if(user && user.id){
+              user = { value:user.id,name:user.name,unitId:user.unitId }
+              this.allUsers.push(user.value)
+              this.users.push(user)
+              this.userObj[user.value] = user
+            }
+          }
+        })
+      }else{
+        this.title = flow.name + ' 流程详情'
+        ///获取当前任务
+        G.get('/api/model/f_task', { id:this.taskId }).then(task => {
+          ///已完成节点
+          G.get('/api/model/f_taskDetail',{ f_taskId:this.taskId }).then(history_nodes => {
+            this.svg_window.init(flow,task,history_nodes)
+          })
+        })
+      }
+    })
+    this.svg_window.FlowUpdate = flow => {
+      return G.put('/api/model/f_flow',{ id:this.flowId, ...flow },null, { loading:false })
+    }
+    ///获取节点详情
+    this.svg_window.NodeGet = id => {
+      return G.get('/api/model/f_node',{ id })
+    }
+    ///创建节点
+    this.svg_window.NodeCreate = node =>{
+      return G.post('/api/model/f_node',{ f_flowId:this.flowId, ...node })
+    }
+    ///更新节点
+    this.svg_window.NodeUpdate = node => {
+      return G.put('/api/model/f_node',node)
+    }
+    ///删除节点
+    this.svg_window.NodeRemove = id => {
+      return G.delete('/api/model/f_node',{ id, sql:{ real:true } })
+    }
+    ///获取连线详情
+    this.svg_window.LineGet = id => {
+      return G.get('/api/model/f_line',{ id })
+    }
+    ///创建连线
+    this.svg_window.LineCreate = line => {
+      return G.post('/api/model/f_line',{ f_flowId:this.flowId, ...line })
+    }
+    ///更新连线
+    this.svg_window.LineUpdate = line => {
+      return G.put('/api/model/f_line',line)
+    }
+    ///删除连线
+    this.svg_window.LineRemove = id => {
+      return G.delete('/api/model/f_line',{ id, sql:{ real:true } })
+    }
+    ///设置操作人员列表
+    this.svg_window.SetUserList = lineId => {
+      this.userVisible = true
+      this.lineId = lineId
+      G.get('/api/model/f_line', { id:lineId }).then(res => {
+        //this.checkedUsers = res.users
+        this.$refs.userselect.open(res.users)
+        // let users = res.users ? JSON.parse(res.users) : []
+        // let checkedUsers = []
+        // for(let i = 0; i < users.length; i ++) if(users[i] && users[i].value) checkedUsers.push(users[i].value)
+        // this.checkedUsers = checkedUsers
+        // this.checkAll = checkedUsers.length == this.users.length
+        // this.isIndeterminate = checkedUsers.length > 0 && checkedUsers.length < this.users.length
+      })
+    }
+    ///获取流程任务详情
+    this.svg_window.TaskDetail = (taskId,nodeId,taskDetailId) => {
+      this.visible = true
+      this.$nextTick(() => {
+        this.$refs.taskDetail.init(taskId)
+      })
+    }
+    ///svg页面弹框
+    this.svg_window.EditDialog = svgEdit => {
+      this.setData({ svgEditTitle:svgEdit.title,svgEditVisible:true })
+      this.$nextTick(()=>{
+        this.selectComponent('#svgEdit').init(svgEdit.models, svgEdit.data || svgEdit.values, svgEdit.readOnly || false,[] )
+      })
+    }
+  }
+});
+})(Y)
+</script>
+<style scoped>
+  
+</style>

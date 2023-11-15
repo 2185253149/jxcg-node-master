@@ -1,0 +1,16 @@
+/* scoped */
+.checkbox1{
+  cursor: pointer;
+}
+.checkboxIcon{
+  float: left;
+}
+.checkboxLabel{
+  float: left;
+  margin-top:12rpx;
+  margin-left:4rpx;
+  margin-right:16rpx;
+}
+.Web .checkboxLabel{
+  margin-top:6px;
+}

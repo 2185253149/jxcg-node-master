@@ -1,0 +1,26 @@
+/* scoped */
+.components_Input_Map_Polygon_Polygon{
+  height: 100%;
+  width: 100%;
+}
+.componentMap{
+  min-width: 400px;
+  min-height: 400px;
+}
+.componentBtn{
+  position: absolute;
+  margin: 16px;
+  z-index: 1000;
+}
+.componentTips{
+  padding: 8px;
+  background-color: #fff;
+  margin-top: 8px;
+  width: 230px;
+  font-size: 12px;
+  color: #999;
+  line-height: 1.5;
+}
+.componentTipTitle{
+  color:#ff0000;
+}
